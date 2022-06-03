@@ -1,0 +1,32 @@
+"../utils.fif" include
+// ------------------------------------------- CODE
+
+"../out/snft-sign-request.fif" include
+<s =: code
+
+// ----------------------------------------- CONSTS
+
+"EQCBBnE7Vo2oMat07GJP2K6GOzoNdLcA8D1s3ZyTgW5kiBIP" dup =: snft_sign_request_address $>smca 0= abort"bad address"
+=: snft_sign_request_flags
+=: snft_sign_request_addr
+=: snft_sign_request_wc
+<b b{100} s, snft_sign_request_wc 8 i, snft_sign_request_addr 256 u, b> <s =: contract_address
+
+
+12000000000 =: my_balance
+0 =: msg_value
+
+0 tuple 0x076ef1ea , // magic
+0 , 0 , // actions msg_sents
+1570998536 , // unix_time
+1 , 1 , 3 , // block_lt, trans_lt, rand_seed
+0 tuple my_balance , dictnew , , // remaining balance
+contract_address , dictnew , // contract_address, global_config
+1 tuple // wrap to another tuple
+=: c7
+
+true =: bounce
+
+0      =: recv_internal          // to run recv_internal() 
+-1     =: recv_external          // to invoke recv_external()
+126602 =: get_sign_request_data  // (crc16.crc16xmodem(b"get_sign_request_data") & 0xffff) | 0x10000

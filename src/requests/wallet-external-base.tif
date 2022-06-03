@@ -1,0 +1,48 @@
+#!/usr/bin/env fift -s
+"TonUtil.fif" include
+"Asm.fif" include
+
+
+{{ request_body }}
+
+
+// --------------------- Internal message from Wallet to Target Contract ---------------------
+
+<b
+   seqno 32 u,     // wallet seq_no
+   send_mode 8 u,  // send_mode
+
+   // body - to be sent from wallet to target contract
+   request_body ref,
+b> =: internal_body
+
+
+// signing body
+internal_body hashu wallet_pk ed25519_sign_uint =: signature
+
+
+// --------------------- Final external query to Blockchain ---------------------
+
+<b
+   // header: prefix, none from_address (external msg)
+   b{1000} s,
+
+   // from_address: address prefix, wc, address
+   b{100} s,      
+   wallet_wc 8 i,
+   wallet_addr 256 u,
+
+   // grams importFee = 0
+   0 Gram,
+
+   // no state_init, body as slice
+   b{00} s,
+   signature B,
+   internal_body <s s,
+b> =: external_message
+
+external_message 2 boc+>B
+file_base +"-query.boc" tuck B>file
+."(Saved smart contract creating query to file " type .")" cr
+
+cr ."WALLET_ADDRESS:" cr wallet_wc wallet_addr wallet_flags smca>$ .dump cr

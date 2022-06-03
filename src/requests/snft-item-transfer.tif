@@ -1,0 +1,89 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// nanotons from collection to nft, dft 10000000
+{{ item_ng }} =: item_ng  
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// addresses
+
+{{ wallet_address }} dup =: wallet_address $>smca 0= abort"bad address"
+=: wallet_flags
+=: wallet_addr
+=: wallet_wc
+
+{{ new_owner_address }} dup =: new_owner_address $>smca 0= abort"bad address"
+=: new_owner_flags
+=: new_owner_addr
+=: new_owner_wc
+
+{{ item_address }} dup =: item_address $>smca 0= abort"bad address"
+=: item_flags
+=: item_addr
+=: item_wc
+
+// portal user out path
+{{ out_path }} =: out_path
+{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
+
+// file path prefix
+user_out_path script_name $+ {{ ts }} $+ =: file_base
+secret_path +"/wallet.pk"    load-keypair nip =: wallet_pk
+3 =: send_mode
+0x5fcc3d14 =: op_transfer
+
+
+// --------------------- Internal message from Wallet to Contract ---------------------
+
+<b
+   // operation: transfer
+   op_transfer 32 u,
+
+   // query_id
+   0 64 u,
+
+   // new owner address: flags, wc, address
+   b{100} s, new_owner_wc 8 i, new_owner_addr 256 u,
+
+   // response address: none
+   b{00} s,
+
+   // no payload
+   0 1 i,
+
+   // forward amount to new_owner_address + type
+   0 Gram,
+   b{0} s,
+
+   // no payload
+   0 1 i,
+b> =: transfer_body
+
+
+// --------------------- Internal message from Wallet to Contract ---------------------
+
+// body - to be sent from wallet to collection contract
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (to be filled by server)
+   b{011000} s,
+
+   // nft address: flags, wc, address
+   b{100} s, item_wc 8 i, item_addr 256 u,
+
+   // coints to be passed to nft + type
+   item_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // no state init, body as ref
+   b{01} s,
+   transfer_body ref,
+b> =: request_body

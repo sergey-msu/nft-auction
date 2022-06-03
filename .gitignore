@@ -1,3 +1,14 @@
+# ------------------ Project --------------------
+
+# Build files
+/out
+
+# Secret files
+/secrets
+
+# ------------------ Python --------------------
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,0 +1,6 @@
+"TonUtil.fif" include
+"Asm.fif" include
+
+
+{ rot rot <> { abort } { ."----- assert passed -----" cr } cond } : ASSERT_EQUAL_INTS
+{ rot rot B= -1 <> { abort } { ."----- assert passed -----" cr } cond } : ASSERT_EQUAL_BYTES

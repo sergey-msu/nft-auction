@@ -1,0 +1,91 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// NFT next index in collection
+{{ item_index }} =: item_index
+
+// item content uri (uri -->  base64 (UTF-8-based) encode)
+{{ item_content_uri }} =: item_content_uri  
+
+// nanotons to collection, dft 70000000
+{{ coll_ng }} =: coll_ng  
+
+// nanotons from collection to nft, dft 50000000
+{{ item_ng }} =: item_ng  
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// addresses
+
+{{ wallet_address }} dup =: wallet_address $>smca 0= abort"bad address"
+=: wallet_flags
+=: wallet_addr
+=: wallet_wc
+
+{{ owner_address }} dup =: owner_address $>smca 0= abort"bad address"
+=: owner_flags
+=: owner_addr
+=: owner_wc
+
+{{ coll_address }} dup =: coll_address $>smca 0= abort"bad address"
+=: coll_flags
+=: coll_addr
+=: coll_wc
+
+// portal user out path
+{{ out_path }} =: out_path
+{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
+
+// file path prefix
+user_out_path script_name $+ {{ ts }} $+ =: file_base
+secret_path +"/wallet.pk" load-keypair nip =: wallet_pk
+3 =: send_mode
+
+
+// --------------------- Item contract mint body ---------------------
+// NFT has no explicit state init - NFT state init is resolved during mint via collection (see nft-collection.fc) 
+
+<b
+   1 32 u,  // 0 op. code - deploy new nft
+   0 64 u,  // query id
+   item_index 64 u,  // item index
+
+   // init coints + type
+   item_ng Gram,
+   b{0} s,
+
+   <b
+      // owner_address
+      b{100} s, owner_wc 8 i, owner_addr 256 u,
+
+      // item content URI 
+      <b item_content_uri base64>B B, b> ref,
+   b> ref,
+b> =: item_mint_body
+
+
+// --------------------- Internal message from Wallet to Contract ---------------------
+
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (to be filled by server)
+   b{010000} s, 
+
+   // coll_address: prefix, wc, address
+   b{100} s, coll_wc 8 i, coll_addr 256 u,
+
+   // coints to be passed to colection + type
+   coll_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // no state init, body as ref
+   b{01} s,
+   item_mint_body ref,
+b> =: request_body

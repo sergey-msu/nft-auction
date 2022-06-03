@@ -1,0 +1,75 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// in nanotons
+{{ deploy_request_ng }} =: deploy_request_ng 
+
+// addresses
+
+{{ signee_address }} dup =: signee_address $>smca 0= abort"bad address"
+=: signee_flags
+=: signee_addr
+=: signee_wc
+
+{{ object_address }} dup =: object_address $>smca 0= abort"bad address"
+=: object_flags
+=: object_addr
+=: object_wc
+
+{{ provider_address }} dup =: provider_address $>smca 0= abort"bad address"
+=: provider_flags
+=: provider_addr
+=: provider_wc
+
+// portal user out path
+{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
+
+// file path prefix
+user_out_path script_name $+ {{ ts }} $+ =: file_base
+secret_path +"provider.pk" load-keypair nip =: provider_pk
+3 =: send_mode
+
+
+// --------------------- Cancel sign request message body ---------------------
+
+<b
+   0x6D 32 u,   // op code
+   0 64 u,      // query_id
+   b{100} s, signee_wc 8 i, signee_addr 256 u, // wanted signee address
+b> =: in_msg_body
+
+
+// --------------------- Internal message body from Provider to Contract ---------------------
+
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (to be filled by server)
+   b{011000} s, 
+
+   // to_address
+   b{100} s, object_wc 8 u, object_addr 256 u,
+
+   // amount
+   deploy_request_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // no state_init, body as slice
+   b{00} s,
+   in_msg_body <s s,
+b> =: request_body
+
+
+// use simple wallet as provider
+provider_pk =: wallet_pk
+provider_flags =: wallet_flags
+provider_wc =: wallet_wc
+provider_addr =: wallet_addr

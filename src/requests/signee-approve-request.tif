@@ -1,0 +1,66 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// wallet private key file 
+{{ pk_file }} =: wallet_pk_file
+
+// in nanotons
+{{ deploy_request_ng }} =: deploy_request_ng 
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// message
+<b 0 32 u, {{ message }} $, b> =: message-cell
+
+// addresses
+
+{{ wallet_address }} dup =: wallet_address $>smca 0= abort"bad address"
+=: wallet_flags
+=: wallet_addr
+=: wallet_wc
+
+{{ request_address }} dup =: to_address $>smca 0= abort"bad address"
+=: to_flags
+=: to_addr
+=: to_wc
+
+
+// portal user out path
+{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
+
+// file path prefix
+user_out_path script_name $+ {{ ts }} $+ =: file_base
+secret_path wallet_pk_file $+ load-keypair nip =: wallet_pk
+3 =: send_mode
+
+."Passed seqno: " seqno . cr
+."Passed amount (nt): " 0 . cr cr
+
+
+// --------------------- Body: signature approve + comment message ---------------------
+
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (the latter will be filled by server)
+   b{010000} s, 
+
+   // to_address: address prefix, wc, address
+   b{100} s, to_wc 8  i, to_addr 256 u,
+
+   // coints to transfer + type
+   deploy_request_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // no state init
+   b{0} s,
+
+   // message body (as slice or ref)
+   message-cell <s 2dup s-fits? not rot over 1 i, -rot { drop message-cell ref, } { s, } cond
+b> =: request_body

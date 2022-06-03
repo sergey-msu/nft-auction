@@ -1,0 +1,61 @@
+core:
+  fift_path: '/opt/ton/crypto/fift'
+  fift_executer_path: '/opt/liteclient-build/crypto/fift'
+  func_compiler_path: '/opt/liteclient-build/crypto/func'
+  out_path: '../../out/'
+  secret_path: '../../secrets/'
+  wallet_address: 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'
+  wallet_pk: 'wallet.pk'
+  sign_provider_address: 'EQALMaIEwGADZD-K13tjJK_JUcCshWVFxtgFEiNGXKXYV_Bv'
+  sign_provider_pk: 'provider.pk'
+
+api:
+  current: 'http_api_provider' 
+  http_api_provider:
+    api_base_url: 'https://testnet.toncenter.com/api/v2/'
+    api_key: '76577d29bdc879791f7470c117c3aac144d0b41583dd81fbe4e831740313bce5'
+    wait_sec: 1
+    wait_max_iters: 20
+  whales_provider:
+    api_base_url: 'https://sandbox.tonhubapi.com/'
+    api_key: ''
+    wait_sec: 1
+    wait_max_iters: 20
+  liteclient_provider:
+    liteclient_path: '/opt/liteclient-build/lite-client/lite-client'
+    config_path: '/opt/liteclient-build/testnet-global.config.json'
+    wait_sec: 1
+    wait_max_iters: 20
+
+compile:
+  src_path: '../contracts'
+  src_files:
+    simple-wallet: ['stdlib.fc', 'simple-wallet.fc']
+    snft-collection: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'snft-sign-mixin.fc', 'snft-collection.fc', 'snft-getters.fc']
+    snft-item: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'snft-sign-mixin.fc', 'snft-item.fc', 'snft-getters.fc']
+    snft-sign-request: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'snft-sign-request.fc']
+  tif_path: '../requests'
+  tif_files:
+    - ['snft-collection-deploy.tif', 'wallet-external-base.tif']
+    - ['snft-item-mint.tif', 'wallet-external-base.tif']
+    - ['snft-provider-open-request.tif', 'wallet-external-base.tif']
+    - ['snft-provider-cancel-request.tif', 'wallet-external-base.tif']
+    - ['snft-item-transfer.tif', 'wallet-external-base.tif']
+    - ['wallet-transfer-money.tif', 'wallet-external-base.tif']
+    - ['signee-approve-request.tif', 'wallet-external-base.tif']
+    - ['new-simple-wallet.tif']
+    - ['new-provider.tif']
+
+tests:
+  whales:
+    web: 'https://sandbox.tonwhales.com/explorer/address/'
+    wallet: ['EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs', 'wallet.pk']
+    sign_provider: ['EQALMaIEwGADZD-K13tjJK_JUcCshWVFxtgFEiNGXKXYV_Bv', 'provider.pk']
+    signee1: ['EQDaA6jKp9dwhESNfjBIVU54Pz8VJO4VUIGG69YrJVAP7fuT', 'signee1.pk']
+    signee2: ['EQBCxVwuToxF6q0Vc0G-IQUJhzlhX5uusw3bntlL4Yse563D', 'signee2.pk']
+  http_api:
+    web: 'https://testnet.tonscan.org/address/'
+    wallet: ['EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs', 'wallet.pk']
+    sign_provider: ['EQALMaIEwGADZD-K13tjJK_JUcCshWVFxtgFEiNGXKXYV_Bv', 'provider.pk']
+    signee1: ['EQB1grTB2NIAbshA8C1Fu8EiSHiY_ZbTE-tRneTMKgdHAUJH', '--- https://wallet.ton.org/?testnet=true ---']
+    signee2: []

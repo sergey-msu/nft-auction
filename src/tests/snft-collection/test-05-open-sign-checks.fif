@@ -1,0 +1,183 @@
+// Test #05. Open sign request: test money checks.
+
+
+"test-00-header.fif" include
+
+// 'https://pics.com/pdurovsign.png' - sign content
+"aHR0cHM6Ly9waWNzLmNvbS9wZHVyb3ZzaWduLnBuZw==" =: content
+
+"EQAWYHnDf8qmG9mC1CGD1Svf9_9OjWpDgL9EU2fgsTrfH5jG" dup =: owner_address $>smca 0= abort"bad address"
+=: owner_flags
+=: owner_addr
+=: owner_wc
+
+"EQART9XH37phxxDoNGmcKc7t9AS4iR76HPj2Oj0dgSY824RZ" dup =: other_address $>smca 0= abort"bad address"
+=: other_flags
+=: other_addr
+=: other_wc
+
+"EQDK-Qt00761ArsHAK5MevbckLBxyHMmjpUEJ4cHWMKOYsZB" dup =: provider_address $>smca 0= abort"bad address"
+=: provider_flags
+=: provider_addr
+=: provider_wc
+
+"EQCv4tjf-7E9V42WMlRYVPsHtjfiMv3l3-jk4CyE8dz5ReFi" dup =: signee_address $>smca 0= abort"bad address"
+=: signee_flags
+=: signee_addr
+=: signee_wc
+
+
+<b
+   b{100} s, owner_wc 8 i, owner_addr 256 u, // owner address
+   7 64 u,        // next_item_index
+   <b b> ref,     // content
+   <b b> ref,     // nft_item_code
+   <b b> ref,     // royalty_params
+   <b
+      10 8 u,           // sign_max_number
+      0 8 u,            // sign_number
+       500000000 Gram,  // sign_deploy_fee
+      1500000000 Gram,  // sign_commit_fee
+      9000000000 Gram,  // min_stake
+      b{100} s, provider_wc 8 i, provider_addr 256 u, // sign_provider_address
+      sign_request_code s>c ref, // sign_request_code
+      dictnew dict,     // signatures
+   b> ref,
+b> =: init_state
+
+
+<b
+   0x6C 32 u,   // op code
+   0 64 u,      // query_id
+   b{100} s, signee_wc 8 i, signee_addr 256 u, // wanted signee address
+   100 Gram,    // ton amount to pass to request
+   1 16 u,      // network id
+   12345 96 u,  // network address
+   <b  // content
+      0x01 8 u, // offchain prefix 
+      content base64>B B, // content URI
+   b> ref,
+b> <s =: in_msg_body
+
+
+// ------------------------ Case 1: wrong sender ----------------------
+
+<b 
+   // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{0100} s,
+
+   // sender address
+   b{100} s, other_wc 8 i, other_addr 256 u,
+b> =: in_msg_full
+
+
+in_msg_full
+in_msg_body
+recv_internal 
+code
+init_state
+c7 
+runvmctx 
+
+=: state
+=: exit_code
+
+exit_code 410 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// ------------------------ Case 2: Insufficient balance ----------------------
+
+<b
+   // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{0100} s,
+
+   // sender address
+   b{100} s,
+   owner_wc 8 i,
+   owner_addr 256 u,
+b> =: in_msg_full
+
+<b
+   0x6C 32 u,   // op code
+   0 64 u,      // query_id
+   b{100} s, signee_wc 8 i, signee_addr 256 u, // wanted signee address
+   100000000 Gram,   // ton amount to pass to request
+   1 16 u,      // network id
+   12345 96 u,  // network address
+   <b  // content
+      0x01 8 u, // offchain prefix 
+      content base64>B B, // content URI
+   b> ref,
+b> <s =: in_msg_body
+
+
+0 tuple 0x076ef1ea , // magic
+0 , 0 , // actions msg_sents
+1570998536 , // unix_time
+1 , 1 , 3 , // block_lt, trans_lt, rand_seed
+0 tuple 99999999 , dictnew , , // remaining balance
+0 , dictnew , // contract_address, global_config
+1 tuple // wrap to another tuple
+=: c7
+
+in_msg_full
+in_msg_body
+recv_internal 
+code
+init_state
+c7 
+runvmctx 
+
+=: state
+=: exit_code
+
+exit_code 411 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// ------------------------ Case 3: Insufficient amount ----------------------
+
+<b
+   // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{0100} s,
+
+   // sender address
+   b{100} s,
+   owner_wc 8 i,
+   owner_addr 256 u,
+b> =: in_msg_full
+
+<b
+   0x6C 32 u,   // op code
+   0 64 u,      // query_id
+   b{100} s, signee_wc 8 i, signee_addr 256 u, // wanted signee address
+   11149999999 Gram, // ton amount to pass to request (2 + 9 + 0.05 + 0.1 - 1n)
+   1 16 u,      // network id
+   12345 96 u,  // network address
+   <b  // content
+      0x01 8 u, // offchain prefix 
+      content base64>B B, // content URI
+   b> ref,
+b> <s =: in_msg_body
+
+
+0 tuple 0x076ef1ea , // magic
+0 , 0 , // actions msg_sents
+1570998536 , // unix_time
+1 , 1 , 3 , // block_lt, trans_lt, rand_seed
+0 tuple 11249999999 , dictnew , , // remaining balance (2 + 9 + 0.05 + 0.1 + 0.1 - 1n)
+0 , dictnew , // contract_address, global_config
+1 tuple // wrap to another tuple
+=: c7
+
+in_msg_full
+in_msg_body
+recv_internal 
+code
+init_state
+c7 
+runvmctx 
+
+=: state
+=: exit_code
+
+exit_code 412 "Wrong exit code" ASSERT_EQUAL_INTS

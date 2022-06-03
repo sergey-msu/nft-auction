@@ -1,0 +1,138 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// signatures
+{{ sign_max_number }} =: sign_max_number
+{{ sign_deploy_fee }} =: sign_deploy_fee
+{{ sign_commit_fee }} =: sign_commit_fee
+{{ min_stake }} =: min_stake
+
+// collection content URI (uri --> base64 (UTF-8-based) encode)
+{{ collection_content_uri }} =: collection_content_uri
+
+// item content base uri (uri -->  base64 (UTF-8-based) encode)
+{{ item_content_base_uri }} =: item_content_base_uri  
+
+// royalty,% = 100*royalty_factor/royalty_base
+{{ royalty_base }} =: royalty_base            
+{{ royalty_factor }} =: royalty_factor
+
+// in nanotons, dft 50000000
+{{ coll_init_ng }} =: coll_init_ng  
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// addresses
+
+{{ wallet_address }} dup =: wallet_address $>smca 0= abort"bad address"
+=: wallet_flags
+=: wallet_addr
+=: wallet_wc
+
+{{ provider_address }} dup =: provider_address $>smca 0= abort"bad address"
+=: provider_flags
+=: provider_addr
+=: provider_wc
+
+{{ owner_address }} dup =: owner_address $>smca 0= abort"bad address"
+=: owner_flags
+=: owner_addr
+=: owner_wc
+
+{{ royalty_address }} dup =: royalty_address $>smca 0= abort"bad address"
+=: royalty_flags
+=: royalty_addr
+=: royalty_wc
+
+// portal user out path
+{{ out_path }} =: out_path
+{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
+
+// file path prefix
+user_out_path script_name $+ {{ ts }} $+ =: file_base
+secret_path +"/wallet.pk" load-keypair nip =: wallet_pk
+0 =: coll_wc
+3 =: send_mode
+
+
+// --------------------- Collection contract state init ---------------------
+
+// code
+out_path +"snft-collection-code.fif" include =: collection_code
+out_path +"snft-item-code.fif" include =: item_code
+out_path +"snft-sign-request-code.fif" include =: sign_request_code
+
+
+// data
+<b
+   b{100} s, owner_wc 8 i, owner_addr 256 u, // owner address
+   0 64 u, // next item index
+   <b  // content
+      <b  // collection content
+         0x01 8 u, // offchain prefix 
+         collection_content_uri base64>B B, // collection URI
+      b> ref,
+      <b  // common content
+         item_content_base_uri base64>B B, // item base URI
+      b> ref,            
+   b> ref,
+   item_code ref, // item code
+   <b  // royalty
+      royalty_factor 16 u,  // royalty factor
+      royalty_base 16 u,    // royalty base
+      b{100} s, royalty_wc 8 i, royalty_addr 256 u, // royalty address
+   b> ref,
+   <b
+      sign_max_number 8 u,   // sign_max_number
+      0 8 u,                 // sign_number
+      sign_deploy_fee Gram,  // sign_commit_fee
+      sign_commit_fee Gram,  // sign_commit_fee
+      min_stake Gram,        // min_stake
+      b{100} s, provider_wc 8 i, provider_addr 256 u, // sign_provider_address
+      sign_request_code ref, // sign_request_code
+      dictnew dict,          // signatures
+   b> ref,
+b> =: collection_data
+
+// create StateInit = (flags, code, data, libs)
+<b 
+   b{00110} s, 
+   collection_code ref, 
+   collection_data ref,
+b> =: collection_state_init
+collection_state_init ."StateInit: " cr <s csr. cr
+
+// create smart contract address = hash(StateInit)
+collection_state_init hashu coll_wc swap 2dup 2constant collection_addr
+."Smart contract address: " 2dup .addr cr
+2dup file_base +".addr" save-address-verbose
+."Non-bounceable address (for init): " 2dup 5 .Addr cr
+."Bounceable address (for later access): " 4 .Addr cr
+
+
+// --------------------- Internal message body from Wallet to Contract ---------------------
+
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (to be filled by server)
+   b{010000} s, 
+
+   // to_address: address prefix, wc, address
+   b{100} s,
+   collection_addr addr,
+
+   // init coints + type
+   coll_init_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // collection state init (include as ref) - 11, no body - 0
+   b{110} s,
+   collection_state_init ref,
+b> =: request_body

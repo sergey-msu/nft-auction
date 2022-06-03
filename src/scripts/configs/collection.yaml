@@ -1,0 +1,13 @@
+deploy:
+  sign_max_number: 5
+  sign_deploy_fee: 50_000_000   # 0.05 TON
+  sign_commit_fee: 100_000_000  # 0.1 TON
+  min_stake: 500_000_000        # 0.5 TON
+  collection_content_uri: 'https://ipfs.io/ipfs/Qmef2H389nd9vWb9r5Wnx5Mg6YgCNNV862sM6KeYdJHM64?filename=collection333.json'
+  item_content_base_uri:  'https://ipfs.io/ipfs/'
+  royalty_base:   100
+  royalty_factor: 5             # 5% royalty
+  coll_init_ng:   50_000_000    # 0.05 TON
+  owner_address:    'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'
+  royalty_address:  'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'
+  provider_address: 'EQALMaIEwGADZD-K13tjJK_JUcCshWVFxtgFEiNGXKXYV_Bv'

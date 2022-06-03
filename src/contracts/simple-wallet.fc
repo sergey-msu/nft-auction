@@ -1,0 +1,58 @@
+;; Simple wallet v1
+
+
+() recv_internal(slice in_msg) impure {
+  ;; do nothing for internal messages
+}
+
+
+() recv_external(slice in_msg) impure {
+  var signature = in_msg~load_bits(512);
+  var cs = in_msg;
+  int msg_seqno = cs~load_uint(32);
+  
+  var cs2 = begin_parse(get_data());
+  var stored_seqno = cs2~load_uint(32);
+  var public_key = cs2~load_uint(256);
+  var id = cs2~load_uint(32);
+  cs2.end_parse();
+
+  throw_unless(33, msg_seqno == stored_seqno);
+  throw_unless(34, check_signature(slice_hash(in_msg), signature, public_key));
+
+  accept_message();
+
+  cs~touch();
+  if (cs.slice_refs()) {
+    var mode = cs~load_uint(8);
+    var body = cs~load_ref();
+    send_raw_message(body, mode);
+  }
+  cs.end_parse();
+
+  set_data(begin_cell()
+             .store_uint(stored_seqno + 1, 32)
+             .store_uint(public_key, 256)
+             .store_uint(id, 32)
+           .end_cell());
+}
+
+
+;; Get methods
+
+int seqno() method_id {
+  return get_data().begin_parse().preload_uint(32);
+}
+
+int get_public_key() method_id {
+  var cs = get_data().begin_parse();
+  cs~load_uint(32);
+  return cs.preload_uint(256);
+}
+
+int get_id() method_id {
+  var cs = get_data().begin_parse();
+  cs~load_uint(32);
+  cs~load_uint(256);
+  return cs.preload_uint(32);
+}
