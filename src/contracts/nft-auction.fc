@@ -1,3 +1,13 @@
+;; TODO: auction_finish_time - optional
+;; TODO: max_bid_value - optional
+;; ????: should auction been destroyed in case on canellation (if not - how to re-deploy/re-open it again?)
+;; ????: ANY mesage will be sufficient? NO - finish by OP commend also needed
+;;       If auction is finished by time - than this process should be able to be initialized via some control message to auction smart contract
+;; TODO: All methods of sales smart contract should require some extra coins for gas & message fees and should return not used coins to the initiator.
+;; TODO: auction anti-sniping prolongation
+
+
+
 ;; NFT auction smart contract
 
 
@@ -33,9 +43,7 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 }
 
 
-() save_data(slice marketplace_address, 
-             slice nft_address, 
-             slice nft_owner_address, 
+() save_data(slice marketplace_address, slice nft_address, slice nft_owner_address, 
              int auction_finish_time, 
              int min_bid_value,
              int max_bid_value,
@@ -62,17 +70,33 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 }
 
 
-(slice, int) finish_auction(int my_balance,
-                            int msg_value,
-                            slice nft_address,
-                            slice nft_owner_address,
-                            slice winner_address, 
-                            int winner_bid, 
-                            cell marketplace_fee_params, 
-                            cell royalty_params,
-                            int query_id,
-                            int finished?) impure {
-  throw_unless(457, winner_bid >= min_gas_amount());
+() return_bid_to_sender(slice sender_address, int msg_value) impure inline {
+  throw_unless(450, msg_value >= min_gas_amount());
+
+  var msg = begin_cell()
+    .store_uint(0x10, 6) ;; nobounce
+    .store_slice(sender_address)
+    .store_coins(msg_value)
+    .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+  .end_cell();
+
+  send_raw_message(msg, 64); ;; carry all inbound amount minus fees
+
+  return ();
+} 
+
+
+() finish_auction(int my_balance, int msg_value, int query_id,
+                  slice marketplace_address, slice nft_address, slice nft_owner_address,
+                  int auction_finish_time,
+                  int min_bid_value,
+                  int max_bid_value,
+                  slice winner_address, 
+                  int winner_bid, 
+                  cell marketplace_fee_params, 
+                  cell royalty_params,
+                  int finished?) impure {
+  throw_unless(457, msg_value >= min_gas_amount());
   throw_if(600, finished?);
 
   ;; if there is a winner: pay fees
@@ -132,95 +156,97 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 
   send_raw_message(msg, 1);
 
-  return (new_nft_owner, winner_bid);
+  save_data(marketplace_address, nft_address, new_nft_owner,
+            auction_finish_time,
+            min_bid_value,
+            max_bid_value,
+            marketplace_fee_params,
+            royalty_params,
+            winner_address,
+            winner_bid,
+            -1,
+            0);
+
+  return ();
 }
 
 
-(slice, int, int) bid(int my_balance,
-                      int msg_value, 
-                      slice sender_address,
-                      slice nft_address,
-                      slice nft_owner_address,
-                      int min_bid_value,
-                      int max_bid_value,
-                      int auction_finish_time, 
-                      slice curr_winner_addr, 
-                      int curr_winner_bid,
-                      cell marketplace_fee_params, 
-                      cell royalty_params,
-                      int query_id,
-                      int finished?) impure {
+() bid(int my_balance, int msg_value, int query_id,
+       slice marketplace_address, slice nft_address, slice nft_owner_address, 
+       slice sender_address,
+       int auction_finish_time, 
+       int min_bid_value,
+       int max_bid_value,
+       slice curr_winner_addr, 
+       int curr_winner_bid,
+       cell marketplace_fee_params, 
+       cell royalty_params,
+       int finished?) impure {
   throw_unless(450, msg_value >= min_bid_value + min_gas_amount());
 
   int curr_bid = max(min_bid_value, curr_winner_bid);
 
   ;; return all bid amount to sender if one of the following holds:
-  ;;    1. auction already finished
-  ;;    2. time is up
-  ;;    3. bid is insufficient
-  ;;    4. bid is already done
-  if (finished? |
-      (now() >= auction_finish_time) | 
-      (msg_value < curr_bid) |
+  ;;    1. bid is insufficient
+  ;;    2. bid is already done
+  if ((msg_value < curr_bid) |
       ((msg_value == curr_bid) & (~ null?(curr_winner_addr)))) { 
-    var msg = begin_cell()
-                .store_uint(0x10, 6) ;; nobounce
-                .store_slice(sender_address)
-                .store_coins(msg_value)
-                .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-              .end_cell();
+    return_bid_to_sender(sender_address, msg_value);
 
-    send_raw_message(msg, 64); ;; carry all inbound amount minus fees
+    return ();
   }
+
   ;; max bid occured: finish auction immediately
-  elseif (msg_value >= max_bid_value) {
-    var (new_winner_addr, new_winner_bid) = 
-      finish_auction(my_balance,
-                     msg_value,
-                     nft_address,
-                     nft_owner_address,
-                     sender_address, 
-                     msg_value, 
-                     marketplace_fee_params, 
-                     royalty_params,
-                     query_id,
-                     finished?);
-    curr_winner_addr = new_winner_addr;
-    curr_winner_bid = new_winner_bid;
-    finished? = -1;
+  if (msg_value >= max_bid_value) {
+    finish_auction(my_balance, msg_value, query_id,
+                   marketplace_address, nft_address, nft_owner_address,
+                   auction_finish_time,
+                   min_bid_value, 
+                   max_bid_value,
+                   sender_address, 
+                   msg_value, 
+                   marketplace_fee_params, 
+                   royalty_params,
+                   finished?);
+    return();
   }
 
   ;; (curr_winner_bid < msg_value < max_bid_value): do next bid
-  else {
-    ;; return previous bid to bidder
-    var msg = begin_cell()
-                .store_uint(0x10, 6) ;; nobounce
-                .store_slice(curr_winner_addr)
-                .store_coins(curr_winner_bid)
-                .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-              .end_cell();
+  ;; return previous bid to bidder
+  var msg = begin_cell()
+              .store_uint(0x10, 6) ;; nobounce
+              .store_slice(curr_winner_addr)
+              .store_coins(curr_winner_bid)
+              .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+            .end_cell();
 
-    send_raw_message(msg, 1);
+  send_raw_message(msg, 1);
 
-    ;; assign new current winner
-    curr_winner_addr = sender_address;
-    curr_winner_bid = msg_value;
-    finished? = 0;
-  }
+  ;; assign new current winner
+  save_data(marketplace_address, nft_address, nft_owner_address,
+            auction_finish_time, 
+            min_bid_value,
+            max_bid_value,
+            marketplace_fee_params,
+            royalty_params,
+            sender_address,
+            msg_value,
+            0, 0);
 
-  return (curr_winner_addr, curr_winner_bid, finished?);
+  return ();
 }
 
 
-() cancel_auction(int msg_value, 
+() cancel_auction(int my_balance, int msg_value, int query_id,
+                  slice marketplace_address, slice nft_address, slice nft_owner_address,
                   slice sender_address, 
-                  slice nft_address, 
-                  slice nft_owner_address, 
-                  slice marketplace_address, 
+                  int auction_finish_time, 
+                  int min_bid_value,
+                  int max_bid_value,
                   slice curr_winner_addr, 
                   int curr_winner_bid,
-                  int min_bid_value,
-                  int query_id,
+                  cell marketplace_fee_params, 
+                  cell royalty_params,
                   int finished?) impure {
   throw_unless(457, msg_value >= min_gas_amount());
   throw_unless(458, equal_slices(sender_address, nft_owner_address) | 
@@ -229,14 +255,7 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 
   ;; return last bid (if any)
   if (~ null?(curr_winner_addr)) {
-    var msg = begin_cell()
-                .store_uint(0x10, 6) ;; nobounce
-                .store_slice(curr_winner_addr)
-                .store_coins(curr_winner_bid)
-                .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-              .end_cell();
-
-    send_raw_message(msg, 1);
+    return_bid_to_sender(curr_winner_addr, curr_winner_bid);
   }
 
   ;; return NFT back to owner
@@ -256,39 +275,17 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 
   send_raw_message(msg, 1);
 
+  save_data(marketplace_address, nft_address, nft_owner_address,
+           auction_finish_time, 
+           min_bid_value,
+           max_bid_value,
+           marketplace_fee_params,
+           royalty_params,
+           curr_winner_addr,
+           curr_winner_bid,
+           -1, -1);
+
   return ();
-}
-
-
-(slice, int, int) check_auction(int my_balance,
-                                int msg_value,
-                                slice nft_address, 
-                                slice nft_owner_address,
-                                int auction_finish_time, 
-                                slice curr_winner_addr, 
-                                int curr_winner_bid,
-                                cell marketplace_fee_params,
-                                cell royalty_params,
-                                int query_id,
-                                int finished?) impure {
-  ;; time is up check
-  if (now() > auction_finish_time) {
-    var (new_winner_addr, new_winner_bid) = 
-      finish_auction(my_balance,
-                     msg_value,
-                     nft_address,
-                     nft_owner_address,
-                     curr_winner_addr, 
-                     curr_winner_bid, 
-                     marketplace_fee_params, 
-                     royalty_params,
-                     query_id,
-                     finished?);
-
-    return (new_winner_addr, new_winner_bid, -1);
-  }
-
-  return (curr_winner_addr, curr_winner_bid, 0);
 }
 
 
@@ -302,9 +299,7 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 
     slice sender_address = cs~load_msg_addr();
 
-    var (marketplace_address, 
-         nft_address, 
-         nft_owner_address, 
+    var (marketplace_address, nft_address, nft_owner_address, 
          auction_finish_time, 
          min_bid_value,
          max_bid_value,
@@ -332,9 +327,7 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
       int query_id = in_msg_body~load_uint(64);
       slice prev_owner_address = in_msg_body~load_msg_addr();
 
-      save_data(marketplace_address, 
-                nft_address, 
-                prev_owner_address,
+      save_data(marketplace_address, nft_address, prev_owner_address,
                 auction_finish_time, 
                 min_bid_value,
                 max_bid_value,
@@ -345,56 +338,41 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
       return ();
     }
 
-    ;; check auction is already finished
-    if (~ finished?) {
-      var (new_winner_addr, new_winner_bid, new_finished?) = 
-        check_auction(my_balance,
-                      msg_value,
-                      nft_address, 
-                      nft_owner_address,
-                      auction_finish_time,
-                      curr_winner_addr, 
-                      curr_winner_bid,
-                      marketplace_fee_params,
-                      royalty_params,
-                      0,
-                      finished?);
+    ;; check time is up
+    if (~ null?(auction_finish_time) & (now() > auction_finish_time)) {
+      ;; return bid back to sender
+      return_bid_to_sender(sender_address, msg_value);
 
-        curr_winner_addr = new_winner_addr;
-        curr_winner_bid = new_winner_bid;
-        finished? = new_finished?;
+      if (~ finished?) {
+        ;; auction not finished yet: finish him
+        finish_auction(my_balance, msg_value, 0,
+                       marketplace_address, nft_address, nft_owner_address,
+                       auction_finish_time,
+                       min_bid_value,
+                       max_bid_value,
+                       curr_winner_addr, 
+                       curr_winner_bid, 
+                       marketplace_fee_params, 
+                       royalty_params,
+                       finished?);
+      }
+
+      return ();
     }
 
     ;; simple transfer - make a bid
     if (in_msg_body.slice_empty?()) {
-      var (new_winner_addr, new_winner_bid, finished?) = 
-        bid(my_balance,
-            msg_value, 
-            sender_address,
-            nft_address,
-            nft_owner_address,
-            min_bid_value,
-            max_bid_value,
-            auction_finish_time, 
-            curr_winner_addr, 
-            curr_winner_bid,
-            marketplace_fee_params, 
-            royalty_params,
-            0,
-            finished?);
-
-      save_data(marketplace_address, 
-                nft_address, 
-                nft_owner_address,
-                auction_finish_time, 
-                min_bid_value,
-                max_bid_value,
-                marketplace_fee_params,
-                royalty_params,
-                new_winner_addr,
-                new_winner_bid,
-                finished?,
-                0);
+      bid(my_balance, msg_value, 0, 
+          marketplace_address, nft_address, nft_owner_address,
+          sender_address,
+          auction_finish_time,
+          min_bid_value,
+          max_bid_value, 
+          curr_winner_addr, 
+          curr_winner_bid,
+          marketplace_fee_params, 
+          royalty_params,
+          finished?);
 
       return ();
     }
@@ -407,63 +385,50 @@ int min_gas_amount() asm "100000000 PUSHINT"; ;; 0.1 TON
 
     ;; make a bid
     if (op == op::auction_bid()) { 
-      var (new_winner_addr, new_winner_bid, finished?) = 
-        bid(my_balance,
-            msg_value, 
-            sender_address,
-            nft_address,
-            nft_owner_address,
-            min_bid_value,
-            max_bid_value,
-            auction_finish_time, 
-            curr_winner_addr, 
-            curr_winner_bid,
-            marketplace_fee_params, 
-            royalty_params,
-            query_id,
-            finished?);
-
-      save_data(marketplace_address, 
-                nft_address, 
-                nft_owner_address,
-                auction_finish_time, 
-                min_bid_value,
-                max_bid_value,
-                marketplace_fee_params,
-                royalty_params,
-                new_winner_addr,
-                new_winner_bid,
-                finished?,
-                0);
+      bid(my_balance, msg_value, query_id, 
+          marketplace_address, nft_address, nft_owner_address,
+          sender_address,
+          auction_finish_time, 
+          min_bid_value,
+          max_bid_value,
+          curr_winner_addr, 
+          curr_winner_bid,
+          marketplace_fee_params, 
+          royalty_params,
+          finished?);
 
       return ();
     }
 
     ;; cancel auction
     if (op == op::auction_cancel()) { 
-      cancel_auction(msg_value, 
+      cancel_auction(my_balance, msg_value, query_id, 
+                     marketplace_address, nft_address, nft_owner_address,
                      sender_address, 
-                     nft_address, 
-                     nft_owner_address, 
-                     marketplace_address, 
+                     auction_finish_time, 
+                     min_bid_value,
+                     max_bid_value,
                      curr_winner_addr, 
                      curr_winner_bid,
-                     min_bid_value,
-                     query_id,
+                     marketplace_fee_params, 
+                     royalty_params,
                      finished?);
 
-      save_data(marketplace_address, 
-                nft_address, 
-                nft_owner_address,
-                auction_finish_time, 
-                min_bid_value,
-                max_bid_value,
-                marketplace_fee_params,
-                royalty_params,
-                curr_winner_addr,
-                curr_winner_bid,
-                -1,
-                -1);
+      return ();
+    }
+
+    ;; manually finish auction
+    if (op == op::auction_finish()) { 
+      finish_auction(my_balance, msg_value, query_id,
+                     marketplace_address, nft_address, nft_owner_address,
+                     auction_finish_time,
+                     min_bid_value,
+                     max_bid_value,
+                     curr_winner_addr, 
+                     curr_winner_bid, 
+                     marketplace_fee_params, 
+                     royalty_params,
+                     finished?);
 
       return ();
     }

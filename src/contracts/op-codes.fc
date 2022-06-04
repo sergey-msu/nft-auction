@@ -14,3 +14,4 @@ int op::editorship_assigned() asm "0x511a4463 PUSHINT";
 ;; NFT Auction
 int op::auction_bid() asm "2 PUSHINT";
 int op::auction_cancel() asm "3 PUSHINT";
+int op::auction_finish() asm "4 PUSHINT";
