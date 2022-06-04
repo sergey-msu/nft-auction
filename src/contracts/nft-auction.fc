@@ -232,7 +232,13 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
   send_raw_message(msg, 1);
 
-  ;; assign new current winner
+  ;; anti-sniping
+  if ((~ null?(sniper_before_time)) & 
+      (~ null?(sniper_after_prolong)) & 
+      (now() > auction_finish_time - sniper_before_time)) {
+      auction_finish_time += sniper_after_prolong;
+  }
+
   save_data(marketplace_address, nft_address, nft_owner_address,
             marketplace_fee_params, royalty_params,
             auction_finish_time, sniper_before_time, sniper_after_prolong, 
