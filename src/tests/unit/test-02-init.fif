@@ -1,0 +1,58 @@
+// Test #02. Init smart contract (deploy + init phases). 
+
+"../utils.fif" include
+"../out/nft-auction-code.fif" include <s =: code
+"setup-consts.fif" include
+"setup-c7.fif" include
+"setup-states.fif" include
+
+
+// -------------------------- CASE #1: Init: sender != nft 
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b b> <s =: in_msg_body
+
+uninit_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 500 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #2: Deployed, unint: op_code != op::ownership_assigned 
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_wc 8 i, nft_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b 
+   2 32 u, // op
+b> <s =: in_msg_body
+
+uninit_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 501 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #3: Correct deploy + init 
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_wc 8 i, nft_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b 
+   0x05138d91 32 u, // op
+   0 64 u, // query
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u,
+b> <s =: in_msg_body
+
+uninit_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS

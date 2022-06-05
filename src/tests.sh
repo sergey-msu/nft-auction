@@ -48,6 +48,7 @@ $FUNC_PATH \
 
 # run tests
 
-: '
-$FIFT_EXE_PATH -s $TESTS_PATH/snft-collection/test-01-empty.fif
-'
+$FIFT_EXE_PATH -s $TESTS_PATH/unit/test-01-ignore-bounced.fif
+$FIFT_EXE_PATH -s $TESTS_PATH/unit/test-02-init.fif
+
+

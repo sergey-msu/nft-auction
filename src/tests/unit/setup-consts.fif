@@ -1,0 +1,29 @@
+"EQBPgLTB_RHxxXpwLjCUMzHjsvYjdR3dHFfWs765ZpbvOAmn" dup =: marketplace_address $>smca 0= abort"bad address"
+=: marketplace_flags
+=: marketplace_addr
+=: marketplace_wc
+
+"EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs" dup =: nft_address $>smca 0= abort"bad address"
+=: nft_flags
+=: nft_addr
+=: nft_wc
+
+"EQCrP6HGSpC4wZyCa-kx6BWKNcfc9pt7mD-xG-cyL3dC6cV9" dup =: nft_owner_address $>smca 0= abort"bad address"
+=: nft_owner_flags
+=: nft_owner_addr
+=: nft_owner_wc
+
+"EQAOiZWI0ylAIrYahIblh-g3ph14Qp5Gy0AnjpMS72ewxMqZ" dup =: marketplace_fee_address $>smca 0= abort"bad address"
+=: marketplace_fee_flags
+=: marketplace_fee_addr
+=: marketplace_fee_wc
+
+"EQChYbaXApXmpKJ77WR46Ab7y62-25CLK72zg6NCqPtpJNNw" dup =: royalty_address $>smca 0= abort"bad address"
+=: royalty_flags
+=: royalty_addr
+=: royalty_wc
+
+"EQAWYHnDf8qmG9mC1CGD1Svf9_9OjWpDgL9EU2fgsTrfH5jG" dup =: other_address $>smca 0= abort"bad address"
+=: other_flags
+=: other_addr
+=: other_wc

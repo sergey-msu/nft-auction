@@ -1,0 +1,26 @@
+<b
+   b{100} s, marketplace_wc 8 i, marketplace_addr 256 u,
+   b{100} s, nft_wc 8 i, nft_addr 256 u,
+   b{00} s,  // NULL nft_owner
+   <b
+      b{100} s, marketplace_fee_wc 8 i, marketplace_fee_addr 256 u,
+      13  16 u,  // numerator
+      100 16 u,  // denominator
+   b> ref,
+   <b
+      b{100} s, royalty_wc 8 i, royalty_addr 256 u,
+      7   16 u,  // numerator
+      100 16 u,  // denominator
+   b> ref,
+   <b
+      1654870335 32 u,  // auction_finish_time
+      300 32 u,         // sniper_before_time (5 min)
+      600 32 u,         // sniper_after_prolong (10 min)
+      1000000000 Gram,  // min_bid_value
+      9000000000 Gram,  // max_bid_value
+      b{00} s,          // NULL curr_winner_addr
+      0 Gram,           // curr_winner_bid
+      0 1 i,            // is_finished
+      0 1 i,            // is_cancelled
+   b> ref,
+b> =: uninit_state
