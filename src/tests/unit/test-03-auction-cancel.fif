@@ -64,7 +64,26 @@ init_state =: state
 exit_code 457 "Wrong exit code" ASSERT_EQUAL_INTS
 
 
-// -------------------------- CASE #3: Auction cancellation success: no bids to return
+// -------------------------- CASE #3: Auction cancellation: already finished
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   3 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+70000000 =: msg_value
+finished_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 600 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #4: Auction cancellation success: no bids to return
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
@@ -82,6 +101,7 @@ init_state =: state
 "setup-runvmctx.fif" include
 
 exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+actions ASSERT_ACTIONS
 
 state
 "setup-read-state.fif" include
@@ -105,7 +125,7 @@ runvmctx
 "setup-assert-get.fif" include
 
 
-// -------------------------- CASE #4: Auction cancellation success: one bid to return
+// -------------------------- CASE #5: Auction cancellation success: one bid to return
 
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
@@ -123,6 +143,8 @@ bid_state =: state
 "setup-runvmctx.fif" include
 
 exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+actions ASSERT_ACTIONS
 
 state
 "setup-read-state.fif" include

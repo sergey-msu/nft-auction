@@ -79,6 +79,37 @@ b> =: uninit_state
 b> =: init_state
 
 
+// Finished state
+
+<b
+   b{100} s, marketplace_wc 8 i, marketplace_addr 256 u,
+   b{100} s, nft_wc 8 i, nft_addr 256 u,
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u,
+   <b
+      b{100} s, marketplace_fee_wc 8 i, marketplace_fee_addr 256 u,
+      marketplace_fee_numer  16 u,  // numerator
+      marketplace_fee_denom 16 u,   // denominator
+   b> ref,
+   <b
+      b{100} s, royalty_wc 8 i, royalty_addr 256 u,
+      royalty_numer   16 u,  // numerator
+      royalty_denom 16 u,    // denominator
+   b> ref,
+   <b
+      auction_finish_time 32 u,  // auction_finish_time
+      auction_salt 32 u,         // auction_salt
+      sniper_before_time 32 u,   // sniper_before_time (5 min)
+      sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
+      min_bid Gram,              // min_bid_value
+      max_bid Gram,              // max_bid_value
+      bid_step Gram,             // bid_step_value
+      curr_winner_addr s,        // NULL curr_winner_addr
+      curr_winner_bid Gram,      // curr_winner_bid
+      -1 1 i,                    // is_finished
+      is_cancelled 1 i,          // is_cancelled
+   b> ref,
+b> =: finished_state
+
 // State with a bid
 
 <b

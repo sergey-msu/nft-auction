@@ -1,6 +1,6 @@
-;; ????: min_tons_for_storage()
+;; TODO min_tons_for_storage()
 ;; int min_tons_for_storage() asm "50000000 PUSHINT"; ;; 0.05 TON
-
+;; TODO: c5 actions parsing 
 
 
 
@@ -252,8 +252,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
                   slice curr_winner_addr, int curr_winner_bid,
                   int finished?) impure {
   throw_unless(457, msg_value >= min_gas_amount());
-  throw_unless(458, equal_slices(sender_address, nft_owner_address) | 
-                    equal_slices(sender_address, marketplace_address)); ;; ????????????????????????????
+  throw_unless(458, equal_slices(sender_address, nft_owner_address));
   throw_if(600, finished?);
 
   ;; return last bid (if any)
@@ -275,6 +274,8 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
               .store_coins(0)   ;; forward amount to new_owner_address
               .store_int(0, 1)  ;; empty forward_payload
             .end_cell();
+
+  send_raw_message(msg, 1);
 
   save_data(marketplace_address, nft_address, nft_owner_address,
             marketplace_fee_params, royalty_params,
@@ -399,7 +400,8 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     }
 
     ;; manually finish auction
-    if (op == op::auction_finish()) { 
+    if (op == op::auction_finish()) {
+      throw_unless(478, equal_slices(sender_address, nft_owner_address));
       finish_auction(my_balance, msg_value, query_id,
                      marketplace_address, nft_address, nft_owner_address, 
                      marketplace_fee_params, royalty_params,
