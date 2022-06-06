@@ -1,6 +1,7 @@
 ;; TODO min_tons_for_storage()
 ;; int min_tons_for_storage() asm "50000000 PUSHINT"; ;; 0.05 TON
 ;; TODO: c5 actions parsing 
+;; TODO: refactor to nullables int
 
 
 
@@ -224,6 +225,10 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
             .end_cell();
 
   send_raw_message(msg, 1);
+
+      ~dump(9999999999999999999999999999999999999999999);
+      ~dump(now());
+      ~dump(auction_finish_time - sniper_before_time);
 
   ;; anti-sniping
   if ((~ null?(sniper_before_time)) & 

@@ -1,0 +1,201 @@
+// Test #04. Make a bid manually. 
+
+"../utils.fif" include
+"../out/nft-auction-code.fif" include <s =: code
+"setup-consts.fif" include
+"setup-c7.fif" include
+"setup-states.fif" include
+
+nft_owner_addr =: old_nft_owner_addr
+nft_owner_wc =: old_nft_owner_wc
+
+
+// -------------------------- CASE #1: Bid: insufficient message amount
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   2 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+min_bid 49999999 + =: msg_value
+init_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 450 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #2: Bid: first insufficient bid === impossible because min_bid <= bid < min_bid
+
+// -------------------------- CASE #3: Bid: insufficient bid
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   2 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+bidder1_bid min_gas_amount + =: msg_value
+bid_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+bidder1_wc =: curr_winner_wc
+bidder1_addr =: curr_winner_addr
+bidder1_bid =: curr_winner_bid
+"setup-assert-state.fif" include
+
+
+// -------------------------- CASE #4: Bid: max bid occured (overbid)
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   2 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+max_bid min_gas_amount + =: msg_value
+msg_value =: my_balance
+bid_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+-1 =: is_finished
+bidder2_wc =: curr_winner_wc
+bidder2_addr =: curr_winner_addr
+bidder2_wc =: nft_owner_wc
+bidder2_addr =: nft_owner_addr
+max_bid =: curr_winner_bid
+"setup-assert-state.fif" include
+
+
+// -------------------------- CASE #5: Bid: max bid occured (first bid)
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   2 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+max_bid min_gas_amount + =: msg_value
+msg_value =: my_balance
+init_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+-1 =: is_finished
+bidder2_wc =: curr_winner_wc
+bidder2_addr =: curr_winner_addr
+bidder2_wc =: nft_owner_wc
+bidder2_addr =: nft_owner_addr
+max_bid =: curr_winner_bid
+"setup-assert-state.fif" include
+
+
+// -------------------------- CASE #5: Bid: success
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   2 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+bidder1_bid min_gas_amount bid_step 1 + + + =: bidder2_bid
+bidder2_bid =: msg_value
+msg_value =: my_balance
+bid_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+0 =: is_finished
+bidder2_wc =: curr_winner_wc
+bidder2_addr =: curr_winner_addr
+old_nft_owner_wc =: nft_owner_wc
+old_nft_owner_addr =: nft_owner_addr
+bidder2_bid min_gas_amount - =: curr_winner_bid
+"setup-assert-state.fif" include
+
+
+// -------------------------- CASE #6: Bid: success, anti-sniping
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   2 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+bidder1_bid min_gas_amount bid_step 1 + + + =: bidder2_bid
+bidder2_bid =: msg_value
+msg_value =: my_balance
+sniper_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+0 =: is_finished
+bidder2_wc =: curr_winner_wc
+bidder2_addr =: curr_winner_addr
+old_nft_owner_wc =: nft_owner_wc
+old_nft_owner_addr =: nft_owner_addr
+bidder2_bid min_gas_amount - =: curr_winner_bid
+1570999336 =: auction_finish_time
+"setup-assert-state.fif" include
+

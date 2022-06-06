@@ -81,7 +81,7 @@ init_state =: state
 "setup-runvmctx.fif" include
 
 exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
-actions ASSERT_ACTIONS
+actions "No actions" ASSERT_HAS_ACTIONS
 
 state
 "setup-read-state.fif" include
@@ -125,7 +125,7 @@ bid_state =: state
 
 exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
 
-actions ASSERT_ACTIONS
+actions "No actions" ASSERT_HAS_ACTIONS
 
 state
 "setup-read-state.fif" include
@@ -133,9 +133,9 @@ state
 // assert state
 
 -1 =: is_finished
-null =: curr_winner_wc
-null =: curr_winner_addr
-1100000000 =: curr_winner_bid
+bidder1_wc =: curr_winner_wc
+bidder1_addr =: curr_winner_addr
+bidder1_bid =: curr_winner_bid
 "setup-assert-state.fif" include
 
 // assert get

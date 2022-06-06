@@ -32,10 +32,11 @@ stored_min_bid min_bid "Wrong min_bid" ASSERT_EQUAL_INTS
 stored_max_bid max_bid "Wrong max_bid" ASSERT_EQUAL_INTS
 stored_bid_step bid_step "Wrong bid_step" ASSERT_EQUAL_INTS
 
-curr_winner_wc null? {
+curr_winner_wc null? 
+{
   stored_curr_winner_wc "Wrong curr_winner_wc" ASSERT_IS_NULL
   stored_curr_winner_addr "Wrong curr_winner_addr" ASSERT_IS_NULL
-} 
+}
 {
   <b b{100} s, stored_curr_winner_wc 8 i, stored_curr_winner_addr 256 u, b> boc>B  // stored
   <b b{100} s, curr_winner_wc 8 i, curr_winner_addr 256 u, b> boc>B // expected
