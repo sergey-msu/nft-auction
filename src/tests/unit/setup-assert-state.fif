@@ -25,10 +25,12 @@ stored_royalty_numer royalty_numer "Wrong royalty_numer" ASSERT_EQUAL_INTS
 stored_royalty_denom royalty_denom "Wrong royalty_denom" ASSERT_EQUAL_INTS
 
 stored_auction_finish_time auction_finish_time "Wrong auction_finish_time" ASSERT_EQUAL_INTS
+stored_auction_salt auction_salt "Wrong auction_salt" ASSERT_EQUAL_INTS
 stored_sniper_before_time sniper_before_time "Wrong sniper_before_time" ASSERT_EQUAL_INTS
 stored_sniper_after_prolong sniper_after_prolong "Wrong sniper_after_prolong" ASSERT_EQUAL_INTS
 stored_min_bid min_bid "Wrong min_bid" ASSERT_EQUAL_INTS
 stored_max_bid max_bid "Wrong max_bid" ASSERT_EQUAL_INTS
+stored_bid_step bid_step "Wrong bid_step" ASSERT_EQUAL_INTS
 
 curr_winner_wc null? {
   stored_curr_winner_wc "Wrong curr_winner_wc" ASSERT_IS_NULL

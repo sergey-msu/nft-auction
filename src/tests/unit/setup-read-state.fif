@@ -50,6 +50,7 @@ stored_royalty_params s>
 // auction
 
 stored_auction_params 32 u@+ =: stored_auction_params =: stored_auction_finish_time
+stored_auction_params 32 u@+ =: stored_auction_params =: stored_auction_salt
 stored_auction_params 32 u@+ =: stored_auction_params =: stored_sniper_before_time
 stored_auction_params 32 u@+ =: stored_auction_params =: stored_sniper_after_prolong
 
@@ -59,6 +60,8 @@ stored_auction_params stored_min_bid_len 8 * u@+ =: stored_auction_params =: sto
 stored_auction_params 4 u@+ =: stored_auction_params =: stored_max_bid_len
 stored_auction_params stored_max_bid_len 8 * u@+ =: stored_auction_params =: stored_max_bid
 
+stored_auction_params 4 u@+ =: stored_auction_params =: stored_bid_step_len
+stored_auction_params stored_bid_step_len 8 * u@+ =: stored_auction_params =: stored_bid_step
 
 stored_auction_params 2 u@ 0 <> =: has_addr
 stored_auction_params has_addr { 2 u@+ } ifnot =: stored_auction_params drop

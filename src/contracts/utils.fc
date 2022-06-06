@@ -16,6 +16,12 @@ builder store_nullable_msg_addr(builder b, slice s) impure {
 
 
 (slice, (slice)) load_nullable_msg_addr(slice s) impure {
-  slice addr = (s.preload_uint(2) == 0) ? null() : s~load_msg_addr();
+  slice addr = null();
+  if (s.preload_uint(2) == 0) {
+    s~load_uint(2);
+  }
+  else {
+    addr = s~load_msg_addr();
+  } 
   return (s, (addr));
 }

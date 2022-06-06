@@ -41,12 +41,12 @@ exit_code 501 "Wrong exit code" ASSERT_EQUAL_INTS
 
 // -------------------------- CASE #3: Correct deploy + init 
 
-<b 
+<b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_wc 8 i, nft_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b 
+<b
    0x05138d91 32 u, // op
    0 64 u, // query
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u,
@@ -60,8 +60,19 @@ exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
 state
 "setup-read-state.fif" include
 
-// asserts
+// assert state
+
 null =: curr_winner_wc
 null =: curr_winner_addr
 
 "setup-assert-state.fif" include
+
+// assert get
+
+get_auction_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get.fif" include

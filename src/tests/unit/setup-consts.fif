@@ -23,6 +23,16 @@
 =: royalty_addr
 =: royalty_wc
 
+"EQCvYf5W36a0zQrS_wc6PMKg6JnyTcFU56NPx1PrAW63qpvt" dup =: bidder1_address $>smca 0= abort"bad address"
+=: bidder1_flags
+=: bidder1_addr
+=: bidder1_wc
+
+"EQDyBC20fBqrPFEgG088izaeQOgw1ZsWTTuqp7Jo2d1Kz4tQ" dup =: bidder2_address $>smca 0= abort"bad address"
+=: bidder2_flags
+=: bidder2_addr
+=: bidder2_wc
+
 "EQAWYHnDf8qmG9mC1CGD1Svf9_9OjWpDgL9EU2fgsTrfH5jG" dup =: other_address $>smca 0= abort"bad address"
 =: other_flags
 =: other_addr

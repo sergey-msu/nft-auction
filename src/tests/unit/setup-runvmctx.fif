@@ -5,9 +5,10 @@ in_msg_body
 recv_internal 
 code
 state
-c7 
-runvmctx 
+c7
+runvmctxact
 
+=: actions
 =: state
 =: exit_code
 

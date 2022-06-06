@@ -50,5 +50,6 @@ $FUNC_PATH \
 
 $FIFT_EXE_PATH -s $TESTS_PATH/unit/test-01-ignore-bounced.fif
 $FIFT_EXE_PATH -s $TESTS_PATH/unit/test-02-init.fif
+$FIFT_EXE_PATH -s $TESTS_PATH/unit/test-03-auction-cancel.fif
 
 
