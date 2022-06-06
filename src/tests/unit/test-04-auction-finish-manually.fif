@@ -1,4 +1,4 @@
-// Test #03. Cancel auction. 
+// Test #04. Finish auction manually. 
 
 "../utils.fif" include
 "../out/nft-auction-code.fif" include <s =: code
@@ -7,27 +7,7 @@
 "setup-states.fif" include
 
 
-
-// -------------------------- CASE #0: Unknown operacion code 
-
-<b 
-   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
-   b{100} s, nft_wc 8 i, nft_addr 256 u, // sender address
-b> =: in_msg_full
-
-<b 
-   777 32 u, // op
-   0 64 u, // query
-   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u,
-b> <s =: in_msg_body
-
-init_state =: state
-"setup-runvmctx.fif" include
-
-exit_code 65535 "Wrong exit code" ASSERT_EQUAL_INTS
-
-
-// -------------------------- CASE #1: Auction cancellation: wrong sender
+// -------------------------- CASE #1: Auction finishing: wrong sender
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
@@ -35,36 +15,17 @@ exit_code 65535 "Wrong exit code" ASSERT_EQUAL_INTS
 b> =: in_msg_full
 
 <b 
-   3 32 u, // op
+   4 32 u, // op
    0 64 u, // query
 b> <s =: in_msg_body
 
 init_state =: state
 "setup-runvmctx.fif" include
 
-exit_code 458 "Wrong exit code" ASSERT_EQUAL_INTS
+exit_code 478 "Wrong exit code" ASSERT_EQUAL_INTS
 
 
-// -------------------------- CASE #2: Auction cancellation: insufficient message amount
-
-<b 
-   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
-   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
-b> =: in_msg_full
-
-<b 
-   3 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
-
-49999999 =: msg_value
-init_state =: state
-"setup-runvmctx.fif" include
-
-exit_code 457 "Wrong exit code" ASSERT_EQUAL_INTS
-
-
-// -------------------------- CASE #3: Auction cancellation: already finished
+// -------------------------- CASE #2: Auction finishing: insufficient message amount
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
@@ -72,7 +33,26 @@ exit_code 457 "Wrong exit code" ASSERT_EQUAL_INTS
 b> =: in_msg_full
 
 <b
-   3 32 u, // op
+   4 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+49999999 =: msg_value
+init_state =: state
+"setup-runvmctx.fif" include
+
+exit_code 447 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #3: Auction finishing: already finished
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b
+   4 32 u, // op
    0 64 u, // query
 b> <s =: in_msg_body
 
@@ -83,7 +63,7 @@ finished_state =: state
 exit_code 600 "Wrong exit code" ASSERT_EQUAL_INTS
 
 
-// -------------------------- CASE #4: Auction cancellation success: no bids to return
+// -------------------------- CASE #4: Auction finishing success: no winner (no bids)
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
@@ -91,7 +71,7 @@ exit_code 600 "Wrong exit code" ASSERT_EQUAL_INTS
 b> =: in_msg_full
 
 <b 
-   3 32 u, // op
+   4 32 u, // op
    0 64 u, // query
 b> <s =: in_msg_body
 
@@ -109,7 +89,6 @@ state
 // assert state
 
 -1 =: is_finished
--1 =: is_cancelled
 null =: curr_winner_wc
 null =: curr_winner_addr
 "setup-assert-state.fif" include
@@ -125,18 +104,20 @@ runvmctx
 "setup-assert-get.fif" include
 
 
-// -------------------------- CASE #5: Auction cancellation success: one bid to return
+// -------------------------- CASE #5: Auction finishing success: has winner
 
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b 
-   3 32 u, // op
+<b
+   4 32 u, // op
    0 64 u, // query
 b> <s =: in_msg_body
 
+bidder1_bid =: my_balance
+bidder1_addr =: nft_owner_addr
 70000000 =: msg_value
 bid_state =: state
 
@@ -152,7 +133,6 @@ state
 // assert state
 
 -1 =: is_finished
--1 =: is_cancelled
 null =: curr_winner_wc
 null =: curr_winner_addr
 1100000000 =: curr_winner_bid
@@ -163,7 +143,7 @@ null =: curr_winner_addr
 get_auction_data
 code
 state
-c7 
+c7
 runvmctx
 
 "setup-assert-get.fif" include
