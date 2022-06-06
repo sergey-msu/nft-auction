@@ -1,0 +1,45 @@
+<b b{100} s, stored_marketplace_wc 8 i, stored_marketplace_addr 256 u, b> boc>B  // stored
+<b b{100} s, marketplace_wc 8 i, marketplace_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+<b b{100} s, stored_nft_wc 8 i, stored_nft_addr 256 u, b> boc>B  // stored
+<b b{100} s, nft_wc 8 i, nft_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+<b b{100} s, stored_nft_owner_wc 8 i, stored_nft_owner_addr 256 u, b> boc>B  // stored
+<b b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+<b b{100} s, stored_marketplace_fee_wc 8 i, stored_marketplace_fee_addr 256 u, b> boc>B  // stored
+<b b{100} s, marketplace_fee_wc 8 i, marketplace_fee_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+stored_marketplace_fee_numer marketplace_fee_numer "Wrong marketplace_fee_numer" ASSERT_EQUAL_INTS
+stored_marketplace_fee_denom marketplace_fee_denom "Wrong marketplace_fee_denom" ASSERT_EQUAL_INTS
+
+<b b{100} s, stored_royalty_wc 8 i, stored_royalty_addr 256 u, b> boc>B  // stored
+<b b{100} s, royalty_wc 8 i, royalty_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+stored_royalty_numer royalty_numer "Wrong royalty_numer" ASSERT_EQUAL_INTS
+stored_royalty_denom royalty_denom "Wrong royalty_denom" ASSERT_EQUAL_INTS
+
+stored_auction_finish_time auction_finish_time "Wrong auction_finish_time" ASSERT_EQUAL_INTS
+stored_sniper_before_time sniper_before_time "Wrong sniper_before_time" ASSERT_EQUAL_INTS
+stored_sniper_after_prolong sniper_after_prolong "Wrong sniper_after_prolong" ASSERT_EQUAL_INTS
+stored_min_bid min_bid "Wrong min_bid" ASSERT_EQUAL_INTS
+stored_max_bid max_bid "Wrong max_bid" ASSERT_EQUAL_INTS
+
+curr_winner_wc null? {
+  stored_curr_winner_wc "Wrong curr_winner_wc" ASSERT_IS_NULL
+  stored_curr_winner_addr "Wrong curr_winner_addr" ASSERT_IS_NULL
+} 
+{
+  <b b{100} s, stored_curr_winner_wc 8 i, stored_curr_winner_addr 256 u, b> boc>B  // stored
+  <b b{100} s, curr_winner_wc 8 i, curr_winner_addr 256 u, b> boc>B // expected
+  "Wrong bytes" ASSERT_EQUAL_BYTES
+} cond
+
+stored_curr_winner_bid curr_winner_bid "Wrong curr_winner_bid" ASSERT_EQUAL_INTS
+stored_is_finished is_finished "Wrong is_finished" ASSERT_EQUAL_INTS
+stored_is_cancelled is_cancelled "Wrong is_cancelled" ASSERT_EQUAL_INTS

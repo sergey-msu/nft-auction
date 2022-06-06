@@ -56,3 +56,12 @@ uninit_state =: state
 "setup-runvmctx.fif" include
 
 exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+
+state
+"setup-read-state.fif" include
+
+// asserts
+null =: curr_winner_wc
+null =: curr_winner_addr
+
+"setup-assert-state.fif" include

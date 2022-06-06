@@ -1,0 +1,74 @@
+<s =: stored_state
+
+// bytes
+
+stored_state 3 u@+ =: stored_state =: stored_marketplace_flags
+stored_state 8 u@+ =: stored_state =: stored_marketplace_wc
+stored_state 256 u@+ =: stored_state =: stored_marketplace_addr
+
+stored_state 3 u@+ =: stored_state =: stored_nft_wc_flags
+stored_state 8 u@+ =: stored_state =: stored_nft_wc
+stored_state 256 u@+ =: stored_state =: stored_nft_addr
+
+null =: stored_nft_owner_flags
+null =: stored_nft_owner_wc
+null =: stored_nft_owner_addr
+
+stored_state 2 u@ 0 <> =: has_addr
+stored_state has_addr { 2 u@+ } ifnot =: stored_state drop
+stored_state has_addr { 3 u@+ } { null stored_state } cond =: stored_state =: stored_nft_owner_flags
+stored_state has_addr { 8 u@+ } { null stored_state } cond =: stored_state =: stored_nft_owner_wc
+stored_state has_addr { 256 u@+ } { null stored_state } cond =: stored_state =: stored_nft_owner_addr
+
+// refs
+
+stored_state ref@+ <s =: stored_market_fee_params =: stored_state
+stored_state ref@+ <s =: stored_royalty_params =: stored_state
+stored_state ref@+ <s =: stored_auction_params =: stored_state
+stored_state s>
+
+// marketplace_fee_params
+
+stored_market_fee_params 3 u@+ =: stored_market_fee_params =: stored_marketplace_fee_flags
+stored_market_fee_params 8 u@+ =: stored_market_fee_params =: stored_marketplace_fee_wc
+stored_market_fee_params 256 u@+ =: stored_market_fee_params =: stored_marketplace_fee_addr
+
+stored_market_fee_params 16 u@+ =: stored_market_fee_params =: stored_marketplace_fee_numer
+stored_market_fee_params 16 u@+ =: stored_market_fee_params =: stored_marketplace_fee_denom
+stored_market_fee_params s>
+
+// royalty_params
+
+stored_royalty_params 3 u@+ =: stored_royalty_params =: stored_royalty_flags
+stored_royalty_params 8 u@+ =: stored_royalty_params =: stored_royalty_wc
+stored_royalty_params 256 u@+ =: stored_royalty_params =: stored_royalty_addr
+
+stored_royalty_params 16 u@+ =: stored_royalty_params =: stored_royalty_numer
+stored_royalty_params 16 u@+ =: stored_royalty_params =: stored_royalty_denom
+stored_royalty_params s>
+
+// auction
+
+stored_auction_params 32 u@+ =: stored_auction_params =: stored_auction_finish_time
+stored_auction_params 32 u@+ =: stored_auction_params =: stored_sniper_before_time
+stored_auction_params 32 u@+ =: stored_auction_params =: stored_sniper_after_prolong
+
+stored_auction_params 4 u@+ =: stored_auction_params =: stored_min_bid_len
+stored_auction_params stored_min_bid_len 8 * u@+ =: stored_auction_params =: stored_min_bid
+
+stored_auction_params 4 u@+ =: stored_auction_params =: stored_max_bid_len
+stored_auction_params stored_max_bid_len 8 * u@+ =: stored_auction_params =: stored_max_bid
+
+
+stored_auction_params 2 u@ 0 <> =: has_addr
+stored_auction_params has_addr { 2 u@+ } ifnot =: stored_auction_params drop
+stored_auction_params has_addr { 3 u@+ } { null stored_auction_params } cond =: stored_auction_params =: stored_curr_winner_flags
+stored_auction_params has_addr { 8 u@+ } { null stored_auction_params } cond =: stored_auction_params =: stored_curr_winner_wc
+stored_auction_params has_addr { 256 u@+ } { null stored_auction_params } cond =: stored_auction_params =: stored_curr_winner_addr
+
+stored_auction_params 4 u@+ =: stored_auction_params =: stored_curr_winner_bid_len
+stored_auction_params stored_curr_winner_bid_len 8 * u@+ =: stored_auction_params =: stored_curr_winner_bid
+
+stored_auction_params 1 i@+ =: stored_auction_params =: stored_is_finished
+stored_auction_params 1 i@+ =: stored_auction_params =: stored_is_cancelled
+stored_auction_params s>
