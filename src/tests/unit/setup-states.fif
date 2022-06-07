@@ -32,12 +32,12 @@ b{00} =: curr_winner_addr
       royalty_denom 16 u,    // denominator
    b> ref,
    <b
-      auction_finish_time 32 u,  // auction_finish_time
+      -1 1 i, auction_finish_time 32 u,  // auction_finish_time
       auction_salt 32 u,         // auction_salt
       sniper_before_time 32 u,   // sniper_before_time (5 min)
       sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
       min_bid Gram,              // min_bid_value
-      max_bid Gram,              // max_bid_value
+      -1 1 i, max_bid Gram,              // max_bid_value
       bid_step Gram,             // bid_step_value
       curr_winner_addr s,        // NULL curr_winner_addr
       curr_winner_bid Gram,      // curr_winner_bid
@@ -64,12 +64,12 @@ b> =: uninit_state
       royalty_denom 16 u,    // denominator
    b> ref,
    <b
-      auction_finish_time 32 u,  // auction_finish_time
+      -1 1 i, auction_finish_time 32 u,  // auction_finish_time
       auction_salt 32 u,         // auction_salt
       sniper_before_time 32 u,   // sniper_before_time (5 min)
       sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
       min_bid Gram,              // min_bid_value
-      max_bid Gram,              // max_bid_value
+      -1 1 i, max_bid Gram,              // max_bid_value
       bid_step Gram,             // bid_step_value
       curr_winner_addr s,        // NULL curr_winner_addr
       curr_winner_bid Gram,      // curr_winner_bid
@@ -96,12 +96,12 @@ b> =: init_state
       royalty_denom 16 u,    // denominator
    b> ref,
    <b
-      auction_finish_time 32 u,  // auction_finish_time
+      -1 1 i, auction_finish_time 32 u,  // auction_finish_time
       auction_salt 32 u,         // auction_salt
       sniper_before_time 32 u,   // sniper_before_time (5 min)
       sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
       min_bid Gram,              // min_bid_value
-      max_bid Gram,              // max_bid_value
+      -1 1 i, max_bid Gram,              // max_bid_value
       bid_step Gram,             // bid_step_value
       curr_winner_addr s,        // NULL curr_winner_addr
       curr_winner_bid Gram,      // curr_winner_bid
@@ -128,12 +128,12 @@ b> =: finished_state
       royalty_denom 16 u,    // denominator
    b> ref,
    <b
-      auction_finish_time 32 u,  // auction_finish_time
+      -1 1 i, auction_finish_time 32 u,  // auction_finish_time
       auction_salt 32 u,         // auction_salt
       sniper_before_time 32 u,   // sniper_before_time (5 min)
       sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
       min_bid Gram,              // min_bid_value
-      max_bid Gram,              // max_bid_value
+      -1 1 i, max_bid Gram,              // max_bid_value
       bid_step Gram,             // bid_step_value
       b{100} s, bidder1_wc 8 i, bidder1_addr 256 u, // curr_winner_addr
       bidder1_bid Gram,          // curr_winner_bid
@@ -160,12 +160,12 @@ b> =: finished_bidder_state
       royalty_denom 16 u,    // denominator
    b> ref,
    <b
-      auction_finish_time 32 u,  // auction_finish_time
+      -1 1 i, auction_finish_time 32 u,  // auction_finish_time
       auction_salt 32 u,         // auction_salt
       sniper_before_time 32 u,   // sniper_before_time (5 min)
       sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
       min_bid Gram,              // min_bid_value
-      max_bid Gram,              // max_bid_value
+      -1 1 i, max_bid Gram,      // max_bid_value
       bid_step Gram,             // bid_step_value
       b{100} s, bidder1_wc 8 i, bidder1_addr 256 u,  // curr_winner_addr
       bidder1_bid Gram,          // curr_winner_bid
@@ -192,12 +192,12 @@ b> =: bid_state
       royalty_denom 16 u,    // denominator
    b> ref,
    <b
-      1570998736 32 u,           // auction_finish_time
+      -1 1 i, 1570998736 32 u,   // auction_finish_time
       auction_salt 32 u,         // auction_salt
       sniper_before_time 32 u,   // sniper_before_time (5 min)
       sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
       min_bid Gram,              // min_bid_value
-      max_bid Gram,              // max_bid_value
+      -1 1 i, max_bid Gram,      // max_bid_value
       bid_step Gram,             // bid_step_value
       b{100} s, bidder1_wc 8 i, bidder1_addr 256 u,  // curr_winner_addr
       bidder1_bid Gram,          // curr_winner_bid

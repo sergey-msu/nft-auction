@@ -1,10 +1,3 @@
-;; TODO min_tons_for_storage()
-;; int min_tons_for_storage() asm "50000000 PUSHINT"; ;; 0.05 TON
-;; TODO: c5 actions parsing 
-;; TODO: refactor to nullables int
-
-
-
 ;; NFT auction smart contract
 
 
@@ -27,17 +20,17 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 (int, int, int, int, int, int, int, slice, int, int, int) load_auction_data(cell auction_params) inline {
   var ds = auction_params.begin_parse();
   return (
-    ds~load_uint(32),   ;; auction_finish_time
-    ds~load_uint(32),   ;; auction_salt
-    ds~load_uint(32),   ;; sniper_before_time
-    ds~load_uint(32),   ;; sniper_after_prolong
-    ds~load_coins(),    ;; min_bid_value
-    ds~load_coins(),    ;; max_bid_value
-    ds~load_coins(),    ;; bid_step_value
+    ds~load_nullable_uint(32), ;; auction_finish_time
+    ds~load_uint(32),          ;; auction_salt
+    ds~load_uint(32),          ;; sniper_before_time (min)
+    ds~load_uint(32),          ;; sniper_after_prolong (min)
+    ds~load_coins(),           ;; min_bid_value
+    ds~load_nullable_coins(),  ;; max_bid_value
+    ds~load_coins(),           ;; bid_step_value
     ds~load_nullable_msg_addr(), ;; curr_winner_address
-    ds~load_coins(),    ;; curr_winner_bid
-    ds~load_int(1),     ;; is_finished
-    ds~load_int(1)      ;; is_cancelled
+    ds~load_coins(),           ;; curr_winner_bid
+    ds~load_int(1),            ;; is_finished
+    ds~load_int(1)             ;; is_cancelled
   );
 }
 
@@ -62,12 +55,12 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
              int cancelled?) impure inline {
 
   cell auction_params = begin_cell()
-                          .store_uint(auction_finish_time, 32)
+                          .store_nullable_uint(auction_finish_time, 32)
                           .store_uint(auction_salt, 32)
                           .store_uint(sniper_before_time, 32)
                           .store_uint(sniper_after_prolong, 32)
                           .store_coins(min_bid_value)
-                          .store_coins(max_bid_value)
+                          .store_nullable_coins(max_bid_value)
                           .store_coins(bid_step_value)
                           .store_nullable_msg_addr(curr_winner_addr)
                           .store_coins(curr_winner_bid)

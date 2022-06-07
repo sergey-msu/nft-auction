@@ -9,6 +9,30 @@ int workchain() asm "0 PUSHINT";
 }
 
 
+builder store_nullable_coins(builder b, int value) impure {
+  b = null?(value) ? b.store_int(0, 1) : b.store_int(-1, 1).store_coins(value);
+  return b;
+}
+
+
+(slice, (int)) load_nullable_coins(slice s) impure {
+  int val = s~load_int(1) ? s~load_coins() : null(); 
+  return (s, (val));
+}
+
+
+builder store_nullable_uint(builder b, int value, int len) impure {
+  b = null?(value) ? b.store_int(0, 1) : b.store_int(-1, 1).store_uint(value, len);
+  return b;
+}
+
+
+(slice, (int)) load_nullable_uint(slice s, int len) impure {
+  int val = s~load_int(1) ? s~load_uint(len) : null(); 
+  return (s, (val));
+}
+
+
 builder store_nullable_msg_addr(builder b, slice s) impure {
   b = null?(s) ? b.store_uint(0, 2) : b.store_slice(s);
   return b;
