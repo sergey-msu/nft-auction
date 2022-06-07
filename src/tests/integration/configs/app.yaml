@@ -23,7 +23,7 @@ compile:
     nft-auction: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-auction.fc']
   tif_path: '../../requests'
   tif_files:
-    #- ['nft-auction-deploy.tif', 'wallet-external-base.tif']
+    - ['nft-auction-deploy.tif', 'wallet-external-base.tif']
     - ['nft-marketplace-deploy.tif', 'wallet-external-base.tif']
     - ['nft-collection-deploy.tif', 'wallet-external-base.tif']
     - ['nft-item-mint.tif', 'wallet-external-base.tif']

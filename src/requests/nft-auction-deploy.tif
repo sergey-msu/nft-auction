@@ -1,0 +1,146 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// in nanotons, dft 50000000
+{{ auction_init_ng }} =: auction_init_ng  
+
+// royalty,% = 100*royalty_numer/royalty_denom       
+{{ royalty_numer }} =: royalty_numer
+{{ royalty_denom }} =: royalty_denom
+
+// marketplace_fee,% = 100*marketplace_fee_numer/marketplace_fee_denom       
+{{ marketplace_fee_numer }} =: marketplace_fee_numer
+{{ marketplace_fee_denom }} =: marketplace_fee_denom
+
+// other auction params
+{{ auction_finish_time }} =: auction_finish_time
+{{ auction_salt }} =: auction_salt
+{{ sniper_before_time }} =: sniper_before_time
+{{ sniper_after_prolong }} =: sniper_after_prolong
+{{ min_bid }} =: min_bid
+{{ max_bid }} =: max_bid
+{{ bid_step }} =: bid_step
+
+// addresses
+
+{{ wallet_address }} dup =: wallet_address $>smca 0= abort"bad address"
+=: wallet_flags
+=: wallet_addr
+=: wallet_wc
+
+{{ nft_address }} dup =: nft_address $>smca 0= abort"bad address"
+=: nft_flags
+=: nft_addr
+=: nft_wc
+
+{{ marketplace_address }} dup =: marketplace_address $>smca 0= abort"bad address"
+=: marketplace_flags
+=: marketplace_addr
+=: marketplace_wc
+
+{{ marketplace_fee_address }} dup =: marketplace_fee_address $>smca 0= abort"bad address"
+=: marketplace_fee_flags
+=: marketplace_fee_addr
+=: marketplace_fee_wc
+
+{{ royalty_address }} dup =: royalty_address $>smca 0= abort"bad address"
+=: royalty_flags
+=: royalty_addr
+=: royalty_wc
+
+
+
+// file path prefix
+{{ out_path }} script_name $+ {{ ts }} $+ =: file_base
+secret_path +"/wallet.pk" load-keypair nip =: wallet_pk
+0 =: coll_wc
+3 =: send_mode
+
+
+// --------------------- Auction contract state init ---------------------
+
+// code
+{{ out_path }} +"nft-auction-code.fif" include =: auction_code
+
+// data
+<b
+   b{100} s, marketplace_wc 8 i, marketplace_addr 256 u,
+   b{100} s, nft_wc 8 i, nft_addr 256 u,
+   b{00} s,  // NULL nft_owner
+   <b
+      b{100} s, marketplace_fee_wc 8 i, marketplace_fee_addr 256 u,
+      marketplace_fee_numer 16 u,   // numerator
+      marketplace_fee_denom 16 u,   // denominator
+   b> ref,
+   <b
+      b{100} s, royalty_wc 8 i, royalty_addr 256 u,
+      royalty_numer   16 u,  // numerator
+      royalty_denom 16 u,    // denominator
+   b> ref,
+   <b
+      auction_finish_time null? { 0 1 i, } { -1 1 i, auction_finish_time 32 u, } cond  // auction_finish_time
+      auction_salt 32 u,         // auction_salt
+      sniper_before_time 32 u,   // sniper_before_time (5 min)
+      sniper_after_prolong 32 u, // sniper_after_prolong (10 min)
+      min_bid Gram,              // min_bid_value
+      max_bid null? { 0 1 i, } { -1 1 i, max_bid Gram, } cond  // max_bid_value
+      bid_step Gram,             // bid_step_value
+   b> ref,
+b> =: auction_data
+
+// create StateInit = (flags, code, data, libs)
+<b
+   b{00110} s, 
+   auction_code ref, 
+   auction_data ref,
+b> =: auction_state_init
+auction_state_init ."StateInit: " cr <s csr. cr
+
+// create smart contract address = hash(StateInit)
+auction_state_init hashu coll_wc swap 2dup 2constant auction_addr
+."Smart contract address: " 2dup .addr cr
+2dup file_base +".addr" save-address-verbose
+."Non-bounceable address (for init): " 2dup 5 .Addr cr
+."Bounceable address (for later access): " 4 .Addr cr
+
+
+<b
+   // 1 op. code - deploy new auction
+   1 32 u, 
+
+   // init coints + type
+   auction_init_ng Gram, 
+   b{0} s,
+
+   // auction state init (include as ref) - 11, no body - 0
+   b{110} s,
+   auction_state_init ref,
+b> =: auction_deploy_body
+
+// --------------------- Internal message body from Wallet to Contract ---------------------
+
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (to be filled by server)
+   b{010000} s, 
+
+   // to_address: address prefix, wc, address
+   b{100} s, marketplace_wc 8 i, marketplace_addr 256 u,
+
+   // init coints + type
+   auction_init_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // no state init, body as ref
+   b{01} s,
+   auction_deploy_body ref,
+b> =: request_body

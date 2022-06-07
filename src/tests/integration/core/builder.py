@@ -77,8 +77,12 @@ class Builder:
         if decorate_str:
             for p in params:
                 param = params[p]
+                if param is None:
+                    params[p] = 'null'
+                    continue
                 if isinstance(param, str):
                     params[p] = f'"{param}"'
+                    continue
 
         with open(tpl_file, 'r') as f:
             template = f.read()

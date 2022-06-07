@@ -1,14 +1,33 @@
 
 import sys
+import time
 from pprint import pprint
 
 from core.nft_auction import NftAuction
-from tasks.consts import builder, api, wallet
+from tasks.consts import builder, api, wallet, DEFAULT_WALLET_ADDR
 
+
+MARKETPLACE_ADDRESS = 'EQAkEyjAs6MFdRapSgx39IqzLTBwB-NlWIzxu_GabFvqw-ly'
+NFT_ADDRESS = 'EQDCb78JFeofTGoUuiWxJbscquqNdCnjFQav2M7XBXKQ1MfS'
+ROYALTY_ADDRESS = DEFAULT_WALLET_ADDR
 
 AUCTION_CONFIG = {
-  'owner_address': 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs',
-  'market_init_ng': 50_000_000,    # 0.05 TON
+  'marketplace_address': MARKETPLACE_ADDRESS,
+  'nft_address': NFT_ADDRESS,
+  'marketplace_fee_address': MARKETPLACE_ADDRESS,
+  'marketplace_fee_numer': 10,
+  'marketplace_fee_denom': 100,
+  'royalty_address': ROYALTY_ADDRESS,
+  'royalty_numer': 5,
+  'royalty_denom': 100,
+  'auction_finish_time': None,
+  'auction_salt': int(time.time()),
+  'sniper_before_time': 5,
+  'sniper_after_prolong': 10,
+  'min_bid':   100_000_000,
+  'max_bid': 5_000_000_000,
+  'bid_step':   50_000_000,
+  'auction_init_ng': 500_000_000,
 }
 
 
@@ -23,16 +42,20 @@ def main():
 
     # 2. get info
     if not send:
-        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: AUCTION DATA >>>>>>>>>>>>>>>>>>>>>>>>')
-        result = auction.get_auction_data()
+        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: GENERAL DATA >>>>>>>>>>>>>>>>>>>>>>>>')
+        result = auction.get_general_data()
+        pprint(result)
+
+        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: MARKETPLACE FEE DATA >>>>>>>>>>>>>>>>>>>>>>>>')
+        result = auction.get_marketplace_fee_data()
         pprint(result)
 
         print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: ROYALTY DATA >>>>>>>>>>>>>>>>>>>>>>>>')
-        result = collection.royalty_params()
+        result = auction.get_royalty_data()
         pprint(result)
-        
-        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: ITEM ADDR BY INDEX >>>>>>>>>>>>>>>>>>>>>>>>')
-        result = collection.get_nft_address_by_index(0)
+
+        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: AUCTION DATA >>>>>>>>>>>>>>>>>>>>>>>>')
+        result = auction.get_auction_data()
         pprint(result)
 
 
