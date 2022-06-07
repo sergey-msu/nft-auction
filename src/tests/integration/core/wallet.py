@@ -1,6 +1,6 @@
 import time
 
-from contracts.contract_base import ContractBase
+from core.contract_base import ContractBase
 
 
 class Wallet(ContractBase):
@@ -10,7 +10,6 @@ class Wallet(ContractBase):
                  address=None,
                  pk_file='wallet.pk',
                  balance=None,
-                 user=0,
                  wait_sec=1,
                  wait_max_iters=20,
                  logger=None,
@@ -19,7 +18,6 @@ class Wallet(ContractBase):
                          api=api, 
                          address=address,
                          balance=balance,
-                         user=user,
                          logger=logger,
                          log_path=log_path)
 

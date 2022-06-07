@@ -1,33 +1,17 @@
 import sys
-import yaml
+from core.wallet import Wallet
+from tasks.consts import builder, api
 
-from core.builder import Builder
-from core.api_provider_factory import ApiProviderFactory
-from contracts.wallet import Wallet
-
-
-# at first run ./deploy-sign-provider.sh [n] 0
-# the out/new-provider-query.boc file will appear
 
 def main():
-    with open('configs/app.yaml') as f:
-        config = yaml.safe_load(f)
-
-    builder = Builder(**config['core'])
-    api = ApiProviderFactory.create(config['api'])
-
-    builder.clear_out()
-    builder.compile_sources(**config['compile'])
-    builder.build_templates(**config['compile'])
-
-
+    # 0. args
     seed_id=int(sys.argv[1])
     send = bool(int(sys.argv[2]))
     generate_private_key = int(sys.argv[3])
     pk_file = sys.argv[4] if len(sys.argv) > 4 else 'wallet.pk'
 
     # 1. find out wallet address
-    wallet = Wallet(builder, api, pk_file=pk_file, user=90)
+    wallet = Wallet(builder, api, pk_file=pk_file)
     wallet.deploy(seed_id, generate_private_key=generate_private_key, wc="0", send=False)
 
     print(f'\nWallet address: {wallet.address}\n')

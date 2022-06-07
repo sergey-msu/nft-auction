@@ -1,2 +1,2 @@
 # nft-auction
-Special NFT Auction Smart contracts + API wrappers
+Special NFT Auction Smart contracts + python API wrappers

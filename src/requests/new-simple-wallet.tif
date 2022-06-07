@@ -15,19 +15,15 @@
 
 {{ secret_path }} =: secret_path 
 
-// portal user out path
-{{ out_path }} =: out_path
-{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
-
 // file path prefix
-user_out_path script_name $+ {{ ts }} $+ =: file_base
+{{ out_path }} script_name $+ {{ ts }} $+ =: file_base
 
 
 // code
-out_path +"simple-wallet-code.fif" include =: contract_code
+{{ out_path }} +"simple-wallet-code.fif" include =: contract_code
 
 generate_private_key 
-{ user_out_path pk_file $+ load-generate-keypair } 
+{ {{ out_path }} pk_file $+ load-generate-keypair } 
 { secret_path pk_file $+ load-keypair } cond
 =: wallet_priv =: wallet_pub
 

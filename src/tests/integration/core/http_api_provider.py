@@ -3,12 +3,10 @@ import requests
 import base64
 
 
-class WhalesApiProvider:
-    def __init__(self, api_base_url, api_key, wait_sec, wait_max_iters):
+class HttpApiProvider:
+    def __init__(self, api_base_url, api_key):
         self.api_base_url = api_base_url
         self.api_key = api_key
-        self.wait_sec = wait_sec
-        self.wait_max_iters = wait_max_iters
         self.current_seqnos = {}
 
 
@@ -28,11 +26,13 @@ class WhalesApiProvider:
         result = self._post('runGetMethod', smc_addr=smc_addr, smc_method=smc_method, stack=stack)
         return result['stack']
 
+
     def run_get_balance(self, address):
         url = f'{self.api_base_url}getAddressBalance?api_key={self.api_key}&address={address}'
         response = requests.get(url)
         result = json.loads(response.text)['result']
         return result
+
 
     def run_get_address(self, address):
         url = f'{self.api_base_url}getAddressInformation?api_key={self.api_key}&address={address}'
@@ -51,6 +51,7 @@ class WhalesApiProvider:
             }
 
             response = requests.post(url, json=data)
+
             if not response.ok:
                 raise Exception(response.status_code)
 

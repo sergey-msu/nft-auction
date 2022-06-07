@@ -2,22 +2,23 @@ import os
 import pprint
 import time
 import crc16
-from utils import addr_from_file, tob64string
+
+from core.utils import addr_from_file, tob64string
 
 
 class ContractBase:
     def __init__(self,
                  builder,
                  api,
+                 wallet=None,
                  address=None,
                  balance=None,
-                 user=0,
                  logger=None,
                  log_path='../../logs'):
+        self.wallet = wallet
         self.logger = logger  # TODO
         self.builder = builder
         self.api = api
-        self.user = user
         self._state = None
         self._address = address
         self._balance = balance
@@ -53,15 +54,14 @@ class ContractBase:
     def create_boc(self, script_name, params, wallet, result):
         print(f'Build {script_name} script...')
 
-        user_out_path = os.path.join(self.builder.out_path, f'{self.user}/')
-        if not os.path.exists(user_out_path):
-            os.makedirs(user_out_path)
+        if not os.path.exists(self.builder.out_path):
+            os.makedirs(self.builder.out_path)
 
         ts = int(time.time() * 1000)
 
         tif_file = os.path.join(self.builder.out_path, script_name + '.tif')
-        fif_file = os.path.join(user_out_path, script_name + f'-{ts}.fif')
-        boc_file = os.path.join(user_out_path, script_name + f'-{ts}-query.boc')
+        fif_file = os.path.join(self.builder.out_path, script_name + f'-{ts}.fif')
+        boc_file = os.path.join(self.builder.out_path, script_name + f'-{ts}-query.boc')
 
         # fill template with params
         if wallet is not None:
@@ -70,7 +70,6 @@ class ContractBase:
         params['script_name'] = script_name
         params['secret_path'] = self.builder.secret_path
         params['out_path'] = self.builder.out_path
-        params['user_id'] = str(self.user)
         params['ts'] = f'-{ts}'
 
         print(f'  > script params:\n{pprint.pformat(params)}')
@@ -95,7 +94,6 @@ class ContractBase:
         print('Build: DONE')
 
         result['ts'] = ts
-        result['user_out_path'] = user_out_path
         result['tif_file'] = tif_file
         result['fif_file'] = fif_file
         result['boc_file'] = boc_file

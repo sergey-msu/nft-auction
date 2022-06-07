@@ -1,0 +1,40 @@
+core:
+  fift_path: '/opt/ton/crypto/fift'
+  fift_executer_path: '/opt/liteclient-build/crypto/fift'
+  func_compiler_path: '/opt/liteclient-build/crypto/func'
+  out_path: '../../../out/'
+  secret_path: '../../../secrets/'
+  wallet_address: 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'
+  wallet_pk: 'wallet.pk'
+
+api:
+  #api_base_url: 'https://testnet.toncenter.com/api/v2/'
+  #api_key: '76577d29bdc879791f7470c117c3aac144d0b41583dd81fbe4e831740313bce5'
+  api_base_url: 'https://sandbox.tonhubapi.com/'
+  api_key: ''
+
+compile:
+  src_path: '../../contracts'
+  src_files:
+    simple-wallet: ['stdlib.fc', 'simple-wallet.fc']
+    nft-collection: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-collection.fc']
+    nft-item: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-item.fc']
+    nft-marketplace: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-marketplace.fc']
+    nft-auction: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-auction.fc']
+  tif_path: '../../requests'
+  tif_files:
+    #- ['nft-auction-deploy.tif', 'wallet-external-base.tif']
+    #- ['nft-marketplace-deploy.tif', 'wallet-external-base.tif']
+    - ['nft-collection-deploy.tif', 'wallet-external-base.tif']
+    - ['nft-item-mint.tif', 'wallet-external-base.tif']
+    - ['nft-item-transfer.tif', 'wallet-external-base.tif']
+    - ['wallet-transfer-money.tif', 'wallet-external-base.tif']
+    - ['new-simple-wallet.tif']
+
+tests:
+  whales:
+    web: 'https://sandbox.tonwhales.com/explorer/address/'
+    wallet: ['EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs', 'wallet.pk']
+  http_api:
+    web: 'https://testnet.tonscan.org/address/'
+    wallet: ['EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs', 'wallet.pk']

@@ -28,12 +28,9 @@
 =: item_addr
 =: item_wc
 
-// portal user out path
-{{ out_path }} =: out_path
-{{ out_path }} {{ user_id }} +"/" $+ =: user_out_path  
 
 // file path prefix
-user_out_path script_name $+ {{ ts }} $+ =: file_base
+{{ out_path }} script_name $+ {{ ts }} $+ =: file_base
 secret_path +"/wallet.pk"    load-keypair nip =: wallet_pk
 3 =: send_mode
 0x5fcc3d14 =: op_transfer

@@ -1,10 +1,10 @@
 import base64
 
-from utils import addr_from_b64, tob64string
-from contracts.contract_signable import Signable
+from core.utils import addr_from_b64, tob64string
+from core.contract_base import ContractBase
 
 
-class SnftCollection(Signable):
+class NftCollection(ContractBase):
 
     # Configurable properties
 
@@ -29,7 +29,6 @@ class SnftCollection(Signable):
                  builder,
                  api,
                  wallet=None,
-                 user=None,
                  address=None,
                  balance=None,
                  logger=None,
@@ -39,7 +38,6 @@ class SnftCollection(Signable):
                          wallet=wallet,
                          address=address,
                          balance=balance,
-                         user=user,
                          logger=logger,
                          log_path=log_path)
 
@@ -53,14 +51,10 @@ class SnftCollection(Signable):
 
     # Smart Contract deploy to Blockchain
     
-    def deploy(self, script_name='snft-collection-deploy', send=True):
-        print(f'Deploy SNFT Collection (send={send})')
+    def deploy(self, script_name='nft-collection-deploy', send=True):
+        print(f'Deploy NFT Collection (send={send})')
 
         params = {
-            'sign_max_number': self.sign_max_number,
-            'sign_deploy_fee': self.sign_deploy_fee,
-            'sign_commit_fee': self.sign_commit_fee,
-            'min_stake': self.min_stake,
             'collection_content_uri': tob64string(self.collection_content_uri.encode('utf-8')),
             'item_content_base_uri': tob64string(self.item_content_base_uri.encode('utf-8')),
             'royalty_base': self.royalty_base,
@@ -68,7 +62,6 @@ class SnftCollection(Signable):
             'coll_init_ng': self.coll_init_ng,
             'owner_address': self.owner_address,
             'royalty_address': self.royalty_address,
-            'provider_address': self.provider_address,
         }
 
         result = self.query(params, script_name, send, self.wallet)
@@ -76,7 +69,7 @@ class SnftCollection(Signable):
         addr_file = result['fif_file'][:-4] + '.addr'
         self.set_address_from_file(addr_file)
         print(f' > contract address: {self.address}')
-        print(f'Deploy SNFT Collection (send={send}): DONE')
+        print(f'Deploy NFT Collection (send={send}): DONE')
 
     # Smart Contract API
 
@@ -117,22 +110,6 @@ class SnftCollection(Signable):
 
         if result and len(result) == 1:
             return {
-                'nft_address': addr_from_b64(result[0][1]['object']['data']['b64'])['b'],
-            }
-
-        return None
-
-
-    def get_nft_content(self, index):
-        # TODO: tvm.Cell = nftData.contentCell.toBoc
-        # A BUG, not ready yet: https://t.me/tondev/66903
-        result = self.provider.run_get(self.address,
-                                       'get_nft_content',
-                                       stack=[['num', index], ['tvm.Cell', None]])
-
-        if result and len(result) == 1:
-            return {
-                'collection_data': base64.b64decode(result[1][1]['object']['data']['b64'])[1:].decode('utf-8'),
                 'nft_address': addr_from_b64(result[0][1]['object']['data']['b64'])['b'],
             }
 

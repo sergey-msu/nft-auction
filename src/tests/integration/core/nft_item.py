@@ -1,10 +1,10 @@
 import base64
 
-from utils import addr_from_b64
-from contracts.contract_signable import Signable
+from core.utils import addr_from_b64
+from core.contract_base import ContractBase
 
 
-class SnftItem(Signable):
+class NftItem(ContractBase):
 
     # Configurable properties
 
@@ -26,7 +26,6 @@ class SnftItem(Signable):
                  api,
                  collection,
                  wallet=None,
-                 user=None,
                  address=None,
                  balance=None,
                  logger=None,
@@ -36,7 +35,6 @@ class SnftItem(Signable):
                          wallet=wallet,
                          address=address,
                          balance=balance,
-                         user=user,
                          logger=logger,
                          log_path=log_path)
 
@@ -61,8 +59,8 @@ class SnftItem(Signable):
 
     # Smart Contract deploy to Blockchain
 
-    def mint(self, script_name='snft-item-mint', send=True):
-        print(f'Mint SNFT Item (send={send})')
+    def mint(self, script_name='nft-item-mint', send=True):
+        print(f'Mint NFT Item (send={send})')
 
         params = {
             'item_index': self.item_index,
@@ -76,13 +74,13 @@ class SnftItem(Signable):
         self.query(params, script_name, send, self.wallet)
 
         print(f' > contract address: {self.address}')
-        print(f'Mint SNFT Item (send={send}): DONE')
+        print(f'Mint NFT Item (send={send}): DONE')
 
 
     # Smart contract API
 
-    def transfer_ownership(self, new_owner_address, item_ng=100_000_000, script_name='snft-item-transfer', send=True):
-        print(f'API: SNFT Item transfer ownership to {new_owner_address} (send={send})')
+    def transfer_ownership(self, new_owner_address, item_ng=100_000_000, script_name='nft-item-transfer', send=True):
+        print(f'API: NFT Item transfer ownership to {new_owner_address} (send={send})')
 
         params = {
             'new_owner_address': new_owner_address,
@@ -92,7 +90,7 @@ class SnftItem(Signable):
 
         self.query(params, script_name, send, self.wallet)
 
-        print(f'API: SNFT Item transfer ownership to {new_owner_address} (send={send}): DONE')
+        print(f'API: NFT Item transfer ownership to {new_owner_address} (send={send}): DONE')
 
 
     # Smart Contract GET methods
