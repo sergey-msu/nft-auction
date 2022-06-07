@@ -1,0 +1,15 @@
+5 0 reverse
+=: out_royalty_address
+=: out_royalty_numer
+=: out_royalty_denom
+
+out_royalty_address 3 u@+ =: out_royalty_address =: out_royalty_flags
+out_royalty_address 8 u@+ =: out_royalty_address =: out_royalty_wc
+out_royalty_address 256 u@+ =: out_royalty_address =: out_royalty_addr
+
+<b b{100} s, out_royalty_wc 8 i, out_royalty_addr 256 u, b> boc>B  // stored
+<b b{100} s, royalty_wc 8 i, royalty_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+out_royalty_numer royalty_numer "Wrong royalty_numer" ASSERT_EQUAL_INTS
+out_royalty_denom royalty_denom "Wrong royalty_denom" ASSERT_EQUAL_INTS

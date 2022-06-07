@@ -1,0 +1,29 @@
+5 0 reverse
+=: out_marketplace_address
+=: out_nft_address
+=: out_nft_owner_address
+
+
+out_marketplace_address 3 u@+ =: out_marketplace_address =: out_marketplace_flags
+out_marketplace_address 8 u@+ =: out_marketplace_address =: out_marketplace_wc
+out_marketplace_address 256 u@+ =: out_marketplace_address =: out_marketplace_addr
+
+out_nft_address 3 u@+ =: out_nft_address =: out_nft_flags
+out_nft_address 8 u@+ =: out_nft_address =: out_nft_wc
+out_nft_address 256 u@+ =: out_nft_address =: out_nft_addr
+
+out_nft_owner_address 3 u@+ =: out_nft_owner_address =: out_nft_owner_flags
+out_nft_owner_address 8 u@+ =: out_nft_owner_address =: out_nft_owner_wc
+out_nft_owner_address 256 u@+ =: out_nft_owner_address =: out_nft_owner_addr
+
+<b b{100} s, out_marketplace_wc 8 i, out_marketplace_addr 256 u, b> boc>B  // stored
+<b b{100} s, marketplace_wc 8 i, marketplace_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+<b b{100} s, out_nft_wc 8 i, out_nft_addr 256 u, b> boc>B  // stored
+<b b{100} s, nft_wc 8 i, nft_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+<b b{100} s, out_nft_owner_wc 8 i, out_nft_owner_addr 256 u, b> boc>B  // stored
+<b b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES

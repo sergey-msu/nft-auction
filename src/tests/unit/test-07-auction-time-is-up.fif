@@ -40,13 +40,37 @@ bidder1_addr =: nft_owner_addr
 
 // assert get
 
+get_general_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get-general-data.fif" include
+
+get_marketplace_fee_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get-marketplace-fee-data.fif" include
+
+get_royalty_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get-royalty-data.fif" include
+
 get_auction_data
 code
 state
 c7 
 runvmctx
 
-"setup-assert-get.fif" include
+"setup-assert-get-auction-data.fif" include
 
 
 // -------------------------- CASE #2: Auction finished: already finished, just return msg_value
@@ -80,14 +104,34 @@ bidder1_addr =: nft_owner_addr
 
 // assert get
 
+get_general_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get-general-data.fif" include
+
+get_marketplace_fee_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get-marketplace-fee-data.fif" include
+
+get_royalty_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get-royalty-data.fif" include
+
 get_auction_data
 code
 state
 c7 
 runvmctx
 
-"setup-assert-get.fif" include
-
-
-
-
+"setup-assert-get-auction-data.fif" include

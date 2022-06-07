@@ -19,6 +19,9 @@ contract_address , dictnew , // contract_address, global_config
 
 true =: bounce
 
-0      =: recv_internal     // to run recv_internal() 
+0      =: recv_internal     // to invoke recv_internal() 
 -1     =: recv_external     // to invoke recv_external()
+104039 =: get_general_data  // (crc16.crc16xmodem(b"get_general_data") & 0xffff) | 0x10000
+69076  =: get_royalty_data  // (crc16.crc16xmodem(b"get_auction_data") & 0xffff) | 0x10000
+100560 =: get_marketplace_fee_data  // (crc16.crc16xmodem(b"get_marketplace_fee_data") & 0xffff) | 0x10000
 109137 =: get_auction_data  // (crc16.crc16xmodem(b"get_auction_data") & 0xffff) | 0x10000

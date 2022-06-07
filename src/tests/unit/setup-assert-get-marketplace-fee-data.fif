@@ -1,0 +1,15 @@
+5 0 reverse
+=: out_marketplace_fee_address
+=: out_marketplace_fee_numer
+=: out_marketplace_fee_denom
+
+out_marketplace_fee_address 3 u@+ =: out_marketplace_fee_address =: out_marketplace_fee_flags
+out_marketplace_fee_address 8 u@+ =: out_marketplace_fee_address =: out_marketplace_fee_wc
+out_marketplace_fee_address 256 u@+ =: out_marketplace_fee_address =: out_marketplace_fee_addr
+
+<b b{100} s, out_marketplace_fee_wc 8 i, out_marketplace_fee_addr 256 u, b> boc>B  // stored
+<b b{100} s, marketplace_fee_wc 8 i, marketplace_fee_addr 256 u, b> boc>B // expected
+"Wrong bytes" ASSERT_EQUAL_BYTES
+
+out_marketplace_fee_numer marketplace_fee_numer "Wrong marketplace_fee_numer" ASSERT_EQUAL_INTS
+out_marketplace_fee_denom marketplace_fee_denom "Wrong marketplace_fee_denom" ASSERT_EQUAL_INTS
