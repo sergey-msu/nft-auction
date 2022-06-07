@@ -421,25 +421,33 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 }
 
 
-var get_auction_data() method_id {
-  var (marketplace_address, nft_address, nft_owner_address,
-       marketplace_fee_params, royalty_params, auction_params) = load_data();
-  var (marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom) = load_fees(marketplace_fee_params);
-  var (royalty_address, royalty_numer, royalty_denom) = load_fees(royalty_params);
-  var (auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
-       min_bid_value, max_bid_value, bid_step_value,
-       curr_winner_address, curr_winner_bid,
-       finished?, cancelled?) = load_auction_data(auction_params);
+;; GET methods
 
-  return (
-    marketplace_address, nft_address, nft_owner_address,
-    auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
-    min_bid_value, max_bid_value, bid_step_value,
-    marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom,
-    royalty_address, royalty_numer, royalty_denom,
-    curr_winner_address,
-    curr_winner_bid,
-    finished?,
-    cancelled?
-  );
+var get_general_data() method_id {
+  var (marketplace_address, nft_address, nft_owner_address,
+       _, _, _) = load_data();
+
+  return ( marketplace_address, nft_address, nft_owner_address );
+}
+
+
+var get_royalty_data() method_id {
+  var (_, _, _, _, royalty_params, _)  = load_data();
+  var (royalty_address, royalty_numer, royalty_denom) = load_fees(royalty_params);
+
+  return ( royalty_address, royalty_numer, royalty_denom );
+}
+
+
+var get_marketplace_fee_data() method_id {
+  var (_, _, _, marketplace_fee_params, _, _)  = load_data();
+  var (marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom) = load_fees(marketplace_fee_params);
+
+  return ( marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom );
+}
+
+
+var get_auction_data() method_id {
+  var (_, _, _, _, _, auction_params)  = load_data();
+  return load_auction_data(auction_params);
 }

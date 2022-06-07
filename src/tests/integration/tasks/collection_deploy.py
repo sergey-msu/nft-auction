@@ -26,6 +26,7 @@ def main():
     collection.from_config(COLLECTION_CONFIG)
     collection.deploy(send=send)
 
+    # 2. get info
     if not send:
         print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: COLLECTION DATA >>>>>>>>>>>>>>>>>>>>>>>>')
         result = collection.get_collection_data()

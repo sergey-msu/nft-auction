@@ -34,6 +34,9 @@ class Builder:
     def compile_sources(self, src_path, src_files, **kwargs):
         print(f'Compile *.fc sources from {src_path} ...')
 
+        if not os.path.exists(self.out_path):
+            os.mkdir(self.out_path)
+
         for code_file in src_files:
             file_group = src_files[code_file]
             in_files = [os.path.join(src_path, file) for file in file_group]

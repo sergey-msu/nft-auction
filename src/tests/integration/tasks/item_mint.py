@@ -15,17 +15,20 @@ NFT_ITEM_CONFIG = {
   'item_content_uri': 'item?filename=harold.jpg',
 }
 
+COLLECTION_ADDRESS = 'EQBZNx4DKEwQR6NmFjH2_3h3PAM6F5mmRdN2n5GNztDVxQ_r'
+
 
 def main():
     # 0. args
     send = bool(int(sys.argv[1]))
 
     # 1. mint
-    collection = NftCollection(builder, api, address='EQBZNx4DKEwQR6NmFjH2_3h3PAM6F5mmRdN2n5GNztDVxQ_r')
+    collection = NftCollection(builder, api, address=COLLECTION_ADDRESS)
     item = NftItem(builder, api, collection, wallet)
     item.from_config(NFT_ITEM_CONFIG)
     item.mint(send=send)
 
+    # 2. get info
     if not send:
         print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: ITEM DATA >>>>>>>>>>>>>>>>>>>>>>>>')
         result = item.get_nft_data()
