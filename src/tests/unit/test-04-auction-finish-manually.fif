@@ -3,6 +3,8 @@
 "../utils.fif" include
 "../out/nft-auction-code.fif" include <s =: code
 "setup-consts.fif" include
+
+1570998536 =: now_time
 "setup-c7.fif" include
 "setup-states.fif" include
 

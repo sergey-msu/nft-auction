@@ -92,7 +92,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
   var msg = begin_cell()
     .store_uint(0x10, 6) ;; nobounce
     .store_slice(sender_address)
-    .store_coins(msg_value)      ;; ??????????????  msg_value - min_gas_amount()
+    .store_coins(0)  ;; use 64 flag below
     .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
   .end_cell();
 
@@ -138,6 +138,12 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
                           .end_cell();
 
     send_raw_message(marketplace_msg, 1);
+
+    ~dump(7777777777777777);
+    ~dump(my_balance);
+    ~dump(winner_bid);
+    ~dump(marketplace_fee);
+    ~dump(royalty_amount);
 
     ;; send winner's bid to NFT owner
     var owner_msg = begin_cell()
@@ -225,10 +231,6 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
             .end_cell();
 
   send_raw_message(msg, 1);
-
-      ~dump(9999999999999999999999999999999999999999999);
-      ~dump(now());
-      ~dump(auction_finish_time - sniper_before_time);
 
   ;; anti-sniping
   if ((~ null?(sniper_before_time)) & 

@@ -10,7 +10,7 @@
 
 0 tuple 0x076ef1ea , // magic
 0 , 0 ,              // actions msg_sents
-1570998536 ,         // unix_time
+now_time ,            // unix_time
 1 , 1 , 3 ,          // block_lt, trans_lt, rand_seed
 0 tuple my_balance , dictnew , , // remaining balance
 contract_address , dictnew , // contract_address, global_config

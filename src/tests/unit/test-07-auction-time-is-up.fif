@@ -1,0 +1,93 @@
+// Test #07. Auction time is up. 
+
+"../utils.fif" include
+"../out/nft-auction-code.fif" include <s =: code
+"setup-consts.fif" include
+
+1754870335 =: now_time
+"setup-c7.fif" include
+"setup-states.fif" include
+
+
+// -------------------------- CASE #1: Auction finished: not finished yet, return msg_value and finish
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b b> <s =: in_msg_body
+
+bid_state =: state
+bidder1_bid min_gas_amount + =: my_balance
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+
+-1 =: is_finished
+bidder1_wc =: curr_winner_wc   // winner - same as was - bidder1
+bidder1_addr =: curr_winner_addr  // owner - bidder1 now
+bidder1_bid =: curr_winner_bid
+bidder1_wc =: nft_owner_wc
+bidder1_addr =: nft_owner_addr
+"setup-assert-state.fif" include
+
+// assert get
+
+get_auction_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get.fif" include
+
+
+// -------------------------- CASE #2: Auction finished: already finished, just return msg_value
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+b> =: in_msg_full
+
+<b b> <s =: in_msg_body
+
+finished_bidder_state =: state
+50000000 =: my_balance
+"setup-runvmctx.fif" include
+
+exit_code 0 "Wrong exit code" ASSERT_EQUAL_INTS
+actions "No actions" ASSERT_HAS_ACTIONS
+
+state
+"setup-read-state.fif" include
+
+// assert state
+
+-1 =: is_finished
+bidder1_wc =: curr_winner_wc   // winner - same as was - bidder1
+bidder1_addr =: curr_winner_addr  // owner - bidder1 now
+bidder1_bid =: curr_winner_bid
+bidder1_wc =: nft_owner_wc
+bidder1_addr =: nft_owner_addr
+"setup-assert-state.fif" include
+
+// assert get
+
+get_auction_data
+code
+state
+c7 
+runvmctx
+
+"setup-assert-get.fif" include
+
+
+
+

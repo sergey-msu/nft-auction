@@ -1,4 +1,4 @@
-// Test #05. Make a bid manually. 
+// Test #06. Make a bid by simple transfer. 
 
 "../utils.fif" include
 "../out/nft-auction-code.fif" include <s =: code
@@ -16,13 +16,10 @@ nft_owner_wc =: old_nft_owner_wc
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
-   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{100} s, other_wc 8 i, other_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b
-   2 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
+<b b> <s =: in_msg_body
 
 min_bid 49999999 + =: msg_value
 init_state =: state
@@ -37,13 +34,10 @@ exit_code 450 "Wrong exit code" ASSERT_EQUAL_INTS
 
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
-   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{100} s, other_wc 8 i, other_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b
-   2 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
+<b b> <s =: in_msg_body
 
 bidder1_bid min_gas_amount + =: msg_value
 bid_state =: state
@@ -57,7 +51,7 @@ state
 "setup-read-state.fif" include
 
 // assert state
-bidder1_wc =: curr_winner_wc
+bidder1_wc =: curr_winner_wc   // winner - same as was - bidder1
 bidder1_addr =: curr_winner_addr
 bidder1_bid =: curr_winner_bid
 "setup-assert-state.fif" include
@@ -70,10 +64,7 @@ bidder1_bid =: curr_winner_bid
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b
-   2 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
+<b b> <s =: in_msg_body
 
 max_bid min_gas_amount + =: msg_value
 msg_value =: my_balance
@@ -104,10 +95,7 @@ max_bid =: curr_winner_bid
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b
-   2 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
+<b b> <s =: in_msg_body
 
 max_bid min_gas_amount + =: msg_value
 msg_value =: my_balance
@@ -138,10 +126,7 @@ max_bid =: curr_winner_bid
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b
-   2 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
+<b b> <s =: in_msg_body
 
 bidder1_bid min_gas_amount bid_step 1 + + + =: bidder2_bid
 bidder2_bid =: msg_value
@@ -173,10 +158,7 @@ bidder2_bid min_gas_amount - =: curr_winner_bid
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
 b> =: in_msg_full
 
-<b
-   2 32 u, // op
-   0 64 u, // query
-b> <s =: in_msg_body
+<b b> <s =: in_msg_body
 
 bidder1_bid min_gas_amount bid_step 1 + + + =: bidder2_bid
 bidder2_bid =: msg_value
