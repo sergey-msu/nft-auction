@@ -1,6 +1,5 @@
 
 import sys
-import time
 from pprint import pprint
 
 from core.nft_auction import NftAuction
@@ -8,7 +7,7 @@ from tasks.consts import builder, api, wallet, DEFAULT_WALLET_ADDR
 
 
 MARKETPLACE_ADDRESS = 'EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW'
-NFT_ADDRESS = 'EQCXM6ixoJrUhxY8JSBJGm7o8_Akvpa5mwPZ0nMEj9VQvAKz'
+NFT_ADDRESS = 'EQDo6jRAslIOR6uva6n1YG9xHHr6rIfRL-cp136vsZ4vldQ7'
 ROYALTY_ADDRESS = DEFAULT_WALLET_ADDR
 
 AUCTION_CONFIG = {

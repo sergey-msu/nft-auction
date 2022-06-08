@@ -11,7 +11,7 @@ NFT_ITEM_CONFIG = {
   'owner_address': 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs',
   'coll_ng': 70_000_000,   # 0.07 TON
   'item_ng': 50_000_000,   # 0.05 TON
-  'item_index': 2,
+  'item_index': 6,
   'item_content_uri': 'item?filename=harold.jpg',
 }
 

@@ -112,17 +112,17 @@ class NftAuction(ContractBase):
 
     # Smart Contract API
 
-    def start(nft_owner_address, start_ng=50_000_000, script_name='nft-auction-start', send=True):
-        print(f'API: NFT start auction (send={send})')
+    def cancel(self, cancel_ng=50_000_000, script_name='nft-auction-cancel', send=True):
+        print(f'API: Cancel auction (send={send})')
 
         params = {
-            'new_owner_address': nft_owner_address,
-            'start_ng': start_ng,
+            'cancel_ng': cancel_ng,
+            'auction_address': self.address,
         }
 
         self.query(params, script_name, send, self.wallet)
 
-        print(f'API: NFT start auction (send={send}): DONE')
+        print(f'API: Cancel auction (send={send}): DONE')
 
     # Smart Contract GET methods
 

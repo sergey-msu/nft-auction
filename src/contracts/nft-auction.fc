@@ -79,9 +79,21 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 }
 
 
-() return_bid_to_sender(slice sender_address, int msg_value) impure inline {
-  throw_unless(450, msg_value >= min_gas_amount());
+() return_bid_to_bidder(slice bidder_address, int bid_value) impure inline {
+  var msg = begin_cell()
+    .store_uint(0x10, 6) ;; nobounce
+    .store_slice(bidder_address)
+    .store_coins(bid_value)
+    .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+  .end_cell();
 
+  send_raw_message(msg, 1); ;; carry all inbound amount minus fees
+
+  return ();
+} 
+
+
+() return_bid_to_sender(slice sender_address, int msg_value) impure inline {
   var msg = begin_cell()
     .store_uint(0x10, 6) ;; nobounce
     .store_slice(sender_address)
@@ -131,12 +143,6 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
                           .end_cell();
 
     send_raw_message(marketplace_msg, 1);
-
-    ~dump(7777777777777777);
-    ~dump(my_balance);
-    ~dump(winner_bid);
-    ~dump(marketplace_fee);
-    ~dump(royalty_amount);
 
     ;; send winner's bid to NFT owner
     var owner_msg = begin_cell()
@@ -226,9 +232,10 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
   send_raw_message(msg, 1);
 
   ;; anti-sniping
-  if ((~ null?(sniper_before_time)) & 
-      (~ null?(sniper_after_prolong)) & 
-      (now() > auction_finish_time - sniper_before_time)) {
+  int sniper? = (null?(sniper_before_time) & null?(sniper_after_prolong)) ? 
+                0 : 
+                (now() > auction_finish_time - sniper_before_time);
+  if (sniper?) {
       auction_finish_time += sniper_after_prolong;
   }
 
@@ -257,7 +264,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
   ;; return last bid (if any)
   if (~ null?(curr_winner_addr)) {
-    return_bid_to_sender(curr_winner_addr, curr_winner_bid);
+    return_bid_to_bidder(curr_winner_addr, curr_winner_bid - min_gas_amount());
   }
 
   ;; return NFT back to owner
@@ -331,10 +338,11 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     }
 
     ;; check time is up
-    if (~ null?(auction_finish_time) & (now() > auction_finish_time)) {
-
+    int time_up? = null?(auction_finish_time) ? 0 : (now() > auction_finish_time);
+    if (time_up?) {
       ;; return bid back to sender
-      return_bid_to_sender(sender_address, msg_value);
+      throw_unless(447, msg_value >= min_gas_amount());
+      return_bid_to_sender(sender_address, msg_value - min_gas_amount());
 
       if (~ finished?) {
         ;; auction not finished yet: finish him
@@ -385,7 +393,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     }
 
     ;; cancel auction
-    if (op == op::auction_cancel()) { 
+    if (op == op::auction_cancel()) {
       cancel_auction(my_balance, msg_value, query_id, 
                      marketplace_address, nft_address, nft_owner_address,
                      marketplace_fee_params, royalty_params,
