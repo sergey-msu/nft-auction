@@ -1,34 +1,14 @@
 
 import sys
-import time
 from pprint import pprint
 
 from core.nft_auction import NftAuction
+from core.nft_item import NftItem
 from tasks.consts import builder, api, wallet, DEFAULT_WALLET_ADDR
 
 
-MARKETPLACE_ADDRESS = 'EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW'
 NFT_ADDRESS = 'EQCXM6ixoJrUhxY8JSBJGm7o8_Akvpa5mwPZ0nMEj9VQvAKz'
-ROYALTY_ADDRESS = DEFAULT_WALLET_ADDR
-
-AUCTION_CONFIG = {
-  'marketplace_address': MARKETPLACE_ADDRESS,
-  'nft_address': NFT_ADDRESS,
-  'marketplace_fee_address': MARKETPLACE_ADDRESS,
-  'marketplace_fee_numer': 10,
-  'marketplace_fee_denom': 100,
-  'royalty_address': ROYALTY_ADDRESS,
-  'royalty_numer': 5,
-  'royalty_denom': 100,
-  'auction_finish_time': None,
-  'auction_salt': 1234567890, # int(time.time()),
-  'sniper_before_time': 5,
-  'sniper_after_prolong': 10,
-  'min_bid':   100_000_000,
-  'max_bid': 5_000_000_000,
-  'bid_step':   50_000_000,
-  'auction_init_ng': 500_000_000,
-}
+AUCTION_ADDRESS = 'EQANPb2vh5Q-iJTm-0azR4kVL2Viy4_5kJTRBAZVVV6grwdX'
 
 
 def main():
@@ -36,12 +16,15 @@ def main():
     send = bool(int(sys.argv[1]))
 
     # 1. deploy
-    auction = NftAuction(builder, api, wallet)
-    auction.from_config(AUCTION_CONFIG)
-    auction.deploy(send=send)
+    item = NftItem(builder, api, wallet=wallet, address=NFT_ADDRESS)
+    item.transfer_ownership(new_owner_address=AUCTION_ADDRESS, 
+                            forward_amount=100_000_000,
+                            item_ng=200_000_000, send=send)
 
     # 2. get info
     if not send:
+        auction = NftAuction(builder, api, wallet, address=AUCTION_ADDRESS)
+
         print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: GENERAL DATA >>>>>>>>>>>>>>>>>>>>>>>>')
         result = auction.get_general_data()
         pprint(result)

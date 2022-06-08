@@ -17,7 +17,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 }
 
 
-(int, int, int, int, int, int, int, slice, int, int, int) load_auction_data(cell auction_params) inline {
+(int, int, int, int, int, int, int, slice, int, int, int) load_auction_data(cell auction_params, int initialized?) inline {
   var ds = auction_params.begin_parse();
   return (
     ds~load_nullable_uint(32), ;; auction_finish_time
@@ -27,10 +27,10 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     ds~load_coins(),           ;; min_bid_value
     ds~load_nullable_coins(),  ;; max_bid_value
     ds~load_coins(),           ;; bid_step_value
-    ds~load_nullable_msg_addr(), ;; curr_winner_address
-    ds~load_coins(),           ;; curr_winner_bid
-    ds~load_int(1),            ;; is_finished
-    ds~load_int(1)             ;; is_cancelled
+    initialized? ? ds~load_nullable_msg_addr() : null(), ;; curr_winner_address
+    initialized? ? ds~load_coins() : 0, ;; curr_winner_bid
+    initialized? ? ds~load_int(1) : 0,  ;; is_finished
+    initialized? ? ds~load_int(1) : 0  ;; is_cancelled
   );
 }
 
@@ -300,14 +300,13 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     var (marketplace_address, nft_address, nft_owner_address, 
          marketplace_fee_params, royalty_params, auction_params) = load_data();
+    var initialized? = nft_owner_address.slice_bits() > 2; ;; not initialized if null address
     var (auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
          min_bid_value, max_bid_value, bid_step_value,
          curr_winner_address, curr_winner_bid,
-         finished?, cancelled?) = load_auction_data(auction_params);
+         finished?, cancelled?) = load_auction_data(auction_params, initialized?);
 
-    var is_initialized = nft_owner_address.slice_bits() > 2; ;; not initialized if null address
-
-    if (~ is_initialized) {
+    if (~ initialized?) {
       ;; deploy auction from marketplace: accept coins
       if (equal_slices(sender_address, marketplace_address)) {
          return ();
@@ -427,27 +426,28 @@ var get_general_data() method_id {
   var (marketplace_address, nft_address, nft_owner_address,
        _, _, _) = load_data();
 
-  return ( marketplace_address, nft_address, nft_owner_address );
+  return (marketplace_address, nft_address, nft_owner_address);
 }
 
 
 var get_royalty_data() method_id {
-  var (_, _, _, _, royalty_params, _)  = load_data();
+  var (_, _, _, _, royalty_params, _) = load_data();
   var (royalty_address, royalty_numer, royalty_denom) = load_fees(royalty_params);
 
-  return ( royalty_address, royalty_numer, royalty_denom );
+  return (royalty_address, royalty_numer, royalty_denom);
 }
 
 
 var get_marketplace_fee_data() method_id {
-  var (_, _, _, marketplace_fee_params, _, _)  = load_data();
+  var (_, _, _, marketplace_fee_params, _, _) = load_data();
   var (marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom) = load_fees(marketplace_fee_params);
 
-  return ( marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom );
+  return (marketplace_fee_address, marketplace_fee_numer, marketplace_fee_denom);
 }
 
 
 var get_auction_data() method_id {
-  var (_, _, _, _, _, auction_params)  = load_data();
-  return load_auction_data(auction_params);
+  var (_, _, nft_owner_address, _, _, auction_params) = load_data();
+  var initialized? = nft_owner_address.slice_bits() > 2;
+  return load_auction_data(auction_params, initialized?);
 }

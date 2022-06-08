@@ -27,7 +27,7 @@ internal_body hashu wallet_pk ed25519_sign_uint =: signature
    // header: prefix, none from_address (external msg)
    b{1000} s,
 
-   // from_address: address prefix, wc, address
+   // wallet_address: address prefix, wc, address
    b{100} s,      
    wallet_wc 8 i,
    wallet_addr 256 u,

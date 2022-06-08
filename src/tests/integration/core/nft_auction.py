@@ -112,17 +112,30 @@ class NftAuction(ContractBase):
 
     # Smart Contract API
 
-    # TODO
+    def start(nft_owner_address, start_ng=50_000_000, script_name='nft-auction-start', send=True):
+        print(f'API: NFT start auction (send={send})')
+
+        params = {
+            'new_owner_address': nft_owner_address,
+            'start_ng': start_ng,
+        }
+
+        self.query(params, script_name, send, self.wallet)
+
+        print(f'API: NFT start auction (send={send}): DONE')
 
     # Smart Contract GET methods
 
     def get_general_data(self):
         result = self.api.run_get(self.address, 'get_general_data')
+
         if result and len(result) == 3:
+            nft_owner_address = addr_from_b64(result[2][1]['object']['data']['b64'])['b']
+
             return {
                 'marketplace_address': addr_from_b64(result[0][1]['object']['data']['b64'])['b'],
                 'nft_address': addr_from_b64(result[1][1]['object']['data']['b64'])['b'],
-                'nft_owner_address': addr_from_b64(result[2][1]['object']['data']['b64'])['b'],
+                'nft_owner_address': None if nft_owner_address == 'EQAAAAAAXyQ=' else nft_owner_address,
             }
 
         return None
@@ -159,14 +172,14 @@ class NftAuction(ContractBase):
 
         if result and len(result) == 11:
             return {
-                'auction_finish_time': int(result[0][1], 16) if result[0][1] else None,
+                'auction_finish_time': int(result[0][1], 16) if result[0][0] == 'num' else None,
                 'auction_salt': int(result[1][1], 16),
                 'sniper_before_time': int(result[2][1], 16),
                 'sniper_after_prolong': int(result[3][1], 16),
                 'min_bid_value': int(result[4][1], 16),
                 'max_bid_value': int(result[5][1], 16) if result[0][1] else None,
                 'bid_step_value': int(result[6][1], 16),
-                'curr_winner_address': addr_from_b64(result[7][1]['object']['data']['b64'])['b'],
+                'curr_winner_address': addr_from_b64(result[7][1]['object']['data']['b64'])['b'] if result[0][0] == 'cell' else None,
                 'curr_winner_bid': int(result[6][1], 16),
                 'is_finished': int(result[6][1], 16) == -1,
                 'is_cancelled': int(result[6][1], 16) == -1,

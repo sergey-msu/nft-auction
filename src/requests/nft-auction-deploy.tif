@@ -119,9 +119,11 @@ auction_state_init hashu coll_wc swap 2dup 2constant auction_addr
    auction_init_ng Gram, 
    b{0} s,
 
-   // auction state init (include as ref) - 11, no body - 0
-   b{110} s,
+   // auction state init
    auction_state_init ref,
+
+   // empty body
+   <b b> ref,
 b> =: auction_deploy_body
 
 // --------------------- Internal message body from Wallet to Contract ---------------------

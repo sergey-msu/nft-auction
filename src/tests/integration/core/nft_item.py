@@ -24,7 +24,7 @@ class NftItem(ContractBase):
     def __init__(self,
                  builder,
                  api,
-                 collection,
+                 collection=None,
                  wallet=None,
                  address=None,
                  balance=None,
@@ -79,12 +79,17 @@ class NftItem(ContractBase):
 
     # Smart contract API
 
-    def transfer_ownership(self, new_owner_address, item_ng=100_000_000, script_name='nft-item-transfer', send=True):
+    def transfer_ownership(self, 
+                           new_owner_address, 
+                           item_ng=100_000_000, 
+                           forward_amount=None, 
+                           script_name='nft-item-transfer', send=True):
         print(f'API: NFT Item transfer ownership to {new_owner_address} (send={send})')
 
         params = {
             'new_owner_address': new_owner_address,
             'item_ng': item_ng,
+            'forward_amount': forward_amount or item_ng,
             'item_address': self.address,
         }
 

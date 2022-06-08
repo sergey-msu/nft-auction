@@ -8,10 +8,10 @@ from tasks.consts import builder, api, wallet
 
 
 NFT_ITEM_CONFIG = {
-  'owner_address': 'kQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_6vm',
+  'owner_address': 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs',
   'coll_ng': 70_000_000,   # 0.07 TON
   'item_ng': 50_000_000,   # 0.05 TON
-  'item_index': 0,
+  'item_index': 2,
   'item_content_uri': 'item?filename=harold.jpg',
 }
 

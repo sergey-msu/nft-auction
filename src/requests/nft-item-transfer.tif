@@ -5,8 +5,11 @@
 // wallet seqno
 {{ seqno }} =: seqno
 
-// nanotons from collection to nft, dft 10000000
+// nanotons from collection to nft, dft 70_000_000
 {{ item_ng }} =: item_ng  
+
+// nanotons from nft to new_owner, dft 50_000_000
+{{ forward_amount }} =: forward_amount
 
 // secret path
 {{ secret_path }} =: secret_path 
@@ -55,7 +58,7 @@ secret_path +"/wallet.pk"    load-keypair nip =: wallet_pk
    0 1 i,
 
    // forward amount to new_owner_address + type
-   0 Gram,
+   {{ forward_amount }} Gram,
    b{0} s,
 
    // no payload
