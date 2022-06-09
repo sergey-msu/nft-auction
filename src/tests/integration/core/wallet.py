@@ -1,6 +1,6 @@
 import time
 
-from core.contract_base import ContractBase
+from tests.integration.core.contract_base import ContractBase
 
 
 class Wallet(ContractBase):

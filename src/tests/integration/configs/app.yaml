@@ -2,8 +2,8 @@ core:
   fift_path: '/opt/ton/crypto/fift'
   fift_executer_path: '/opt/liteclient-build/crypto/fift'
   func_compiler_path: '/opt/liteclient-build/crypto/func'
-  out_path: '../../../out/'
-  secret_path: '../../../secrets/'
+  out_path: '../out/'
+  secret_path: '../secrets/'
   wallet_address: 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'
   wallet_pk: 'wallet.pk'
 
@@ -14,14 +14,14 @@ api:
   api_key: ''
 
 compile:
-  src_path: '../../contracts'
+  src_path: 'contracts'
   src_files:
     simple-wallet: ['stdlib.fc', 'simple-wallet.fc']
     nft-collection: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-collection.fc']
     nft-item: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-item.fc']
     nft-marketplace: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-marketplace.fc']
     nft-auction: ['stdlib.fc', 'op-codes.fc', 'utils.fc', 'nft-auction.fc']
-  tif_path: '../../requests'
+  tif_path: 'requests'
   tif_files:
     - ['nft-auction-deploy.tif', 'wallet-external-base.tif']
     - ['nft-auction-cancel.tif', 'wallet-external-base.tif']

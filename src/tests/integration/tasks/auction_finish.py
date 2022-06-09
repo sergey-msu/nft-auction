@@ -33,7 +33,6 @@ def main():
 
         print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: ITEM DATA >>>>>>>>>>>>>>>>>>>>>>>>')
         result = item.get_nft_data()
-        pprint(result)
 
 
 if __name__ == '__main__':

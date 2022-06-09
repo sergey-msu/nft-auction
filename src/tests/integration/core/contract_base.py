@@ -3,7 +3,7 @@ import pprint
 import time
 import crc16
 
-from core.utils import addr_from_file, tob64string
+from tests.integration.core.utils import addr_from_file, tob64string
 
 
 class ContractBase:

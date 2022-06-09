@@ -1,7 +1,7 @@
 import base64
 
-from core.utils import addr_from_b64, tob64string
-from core.contract_base import ContractBase
+from tests.integration.core.utils import addr_from_b64, tob64string
+from tests.integration.core.contract_base import ContractBase
 
 
 class NftCollection(ContractBase):
