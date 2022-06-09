@@ -7,8 +7,8 @@ from core.nft_item import NftItem
 from tasks.consts import builder, api, wallet
 
 
-NFT_ADDRESS = 'EQDo6jRAslIOR6uva6n1YG9xHHr6rIfRL-cp136vsZ4vldQ7'
-AUCTION_ADDRESS = 'EQDxGpmsvfBz4-gcZzZnP_Iv_-bcE2C6W1JluxBsCBqVtNDT'
+NFT_ADDRESS = 'EQBZK1_z9BwM8IP5tqhEB5vccgAB0o8xQKofN_c5Ct2ODiw9'
+AUCTION_ADDRESS = 'EQCMRFoiKQNycZk-oNtCTwsH-KzW0BXd4cRPhCD7Vxl8e4E-'
 
 
 def main():
@@ -25,20 +25,16 @@ def main():
     if not send:
         auction = NftAuction(builder, api, wallet, address=AUCTION_ADDRESS)
 
-        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: GENERAL DATA >>>>>>>>>>>>>>>>>>>>>>>>')
-        result = auction.get_general_data()
-        pprint(result)
-
         print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: MARKETPLACE FEE DATA >>>>>>>>>>>>>>>>>>>>>>>>')
         result = auction.get_marketplace_fee_data()
         pprint(result)
 
-        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: ROYALTY DATA >>>>>>>>>>>>>>>>>>>>>>>>')
-        result = auction.get_royalty_data()
+        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: GENERAL DATA >>>>>>>>>>>>>>>>>>>>>>>>')
+        result = auction.get_general_data()
         pprint(result)
 
-        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: AUCTION DATA >>>>>>>>>>>>>>>>>>>>>>>>')
-        result = auction.get_auction_data()
+        print('\n>>>>>>>>>>>>>>>>>>>>>>>> GET: ITEM DATA >>>>>>>>>>>>>>>>>>>>>>>>')
+        result = item.get_nft_data()
         pprint(result)
 
 

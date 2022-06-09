@@ -124,6 +124,19 @@ class NftAuction(ContractBase):
 
         print(f'API: Cancel auction (send={send}): DONE')
 
+
+    def finish(self, finish_ng=50_000_000, script_name='nft-auction-finish', send=True):
+        print(f'API: Finish auction (send={send})')
+
+        params = {
+            'finish_ng': finish_ng,
+            'auction_address': self.address,
+        }
+
+        self.query(params, script_name, send, self.wallet)
+
+        print(f'API: Finish auction (send={send}): DONE')
+
     # Smart Contract GET methods
 
     def get_general_data(self):
@@ -179,10 +192,10 @@ class NftAuction(ContractBase):
                 'min_bid_value': int(result[4][1], 16),
                 'max_bid_value': int(result[5][1], 16) if result[0][1] else None,
                 'bid_step_value': int(result[6][1], 16),
-                'curr_winner_address': addr_from_b64(result[7][1]['object']['data']['b64'])['b'] if result[0][0] == 'cell' else None,
-                'curr_winner_bid': int(result[6][1], 16),
-                'is_finished': int(result[6][1], 16) == -1,
-                'is_cancelled': int(result[6][1], 16) == -1,
+                'curr_winner_address': addr_from_b64(result[7][1]['object']['data']['b64'])['b'] if result[7][0] == 'cell' else None,
+                'curr_winner_bid': int(result[8][1], 16),
+                'is_finished': int(result[9][1], 16) == -1,
+                'is_cancelled': int(result[10][1], 16) == -1,
             }
 
         return None

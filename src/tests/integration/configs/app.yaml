@@ -25,6 +25,7 @@ compile:
   tif_files:
     - ['nft-auction-deploy.tif', 'wallet-external-base.tif']
     - ['nft-auction-cancel.tif', 'wallet-external-base.tif']
+    - ['nft-auction-finish.tif', 'wallet-external-base.tif']
     - ['nft-marketplace-deploy.tif', 'wallet-external-base.tif']
     - ['nft-collection-deploy.tif', 'wallet-external-base.tif']
     - ['nft-item-mint.tif', 'wallet-external-base.tif']

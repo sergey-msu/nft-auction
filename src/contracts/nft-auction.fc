@@ -207,9 +207,9 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
   throw_unless(450, bid_value >= min_bid_value);
 
   int curr_bid = max(min_bid_value, curr_winner_bid);
-
-  ;; return all amount to sender due to infufficient bid
-  if (((bid_value < curr_bid) & null?(curr_winner_addr)) | ;; first bid ever
+  ;; return all amount to sender due to infufficient bid or in case of finished auction
+  if (finished? |  ;; finished
+      ((bid_value < curr_bid) & null?(curr_winner_addr)) | ;; first bid ever
       ((bid_value <= curr_bid + bid_step_value) & (~ null?(curr_winner_addr)))) {  ;; non-first bid 
     return_bid_to_sender(sender_address, bid_value);
     return ();
@@ -230,19 +230,14 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
   }
 
   ;; (curr_winner_bid < bid_value < max_bid_value): do next bid
-  ;; return previous bid to bidder
-  var msg = begin_cell()
-              .store_uint(0x10, 6) ;; nobounce
-              .store_slice(curr_winner_addr)
-              .store_coins(curr_winner_bid)
-              .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-            .end_cell();
-
-  send_raw_message(msg, 1);
+  ;; return previous bid to bidder (if any)
+  if (~ null?(curr_winner_addr)) {
+    return_bid_to_bidder(curr_winner_addr, curr_winner_bid - fwd_fee);
+  }
 
   ;; anti-sniping
-  int sniper? = (null?(sniper_before_time) & null?(sniper_after_prolong)) ? 
-                0 : 
+  int sniper? = ((null?(sniper_before_time) & null?(sniper_after_prolong)) | null?(auction_finish_time)) ? 
+                0 :
                 (now() > auction_finish_time - sniper_before_time);
   if (sniper?) {
       auction_finish_time += sniper_after_prolong;
@@ -424,7 +419,8 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; manually finish auction
     if (op == op::auction_finish()) {
-      throw_unless(478, equal_slices(sender_address, nft_owner_address));
+      throw_unless(478, equal_slices(sender_address, nft_owner_address) |
+                        equal_slices(sender_address, marketplace_address));
       finish_auction(my_balance, fwd_fee, query_id,
                      marketplace_address, nft_address, nft_owner_address, 
                      marketplace_fee_params, royalty_params,

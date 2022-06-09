@@ -1,0 +1,60 @@
+{{ script_name }} =: script_name
+
+// Params
+
+// wallet seqno
+{{ seqno }} =: seqno
+
+// secret path
+{{ secret_path }} =: secret_path 
+
+// in nanotons, dft 50000000
+{{ finish_ng }} =: finish_ng  
+
+// addresses
+
+{{ wallet_address }} dup =: wallet_address $>smca 0= abort"bad address"
+=: wallet_flags
+=: wallet_addr
+=: wallet_wc
+
+{{ auction_address }} dup =: auction_address $>smca 0= abort"bad address"
+=: auction_flags
+=: auction_addr
+=: auction_wc
+
+// file path prefix
+{{ out_path }} script_name $+ {{ ts }} $+ =: file_base
+secret_path +"/wallet.pk" load-keypair nip =: wallet_pk
+0 =: coll_wc
+3 =: send_mode
+
+
+// --------------------- Finish auction message body ---------------------
+
+<b
+   4 32 u,   // op code
+   0 64 u,   // query_id
+b> =: in_msg_body
+
+
+// --------------------- Internal message body from Wallet to Contract ---------------------
+
+<b
+   // int_msg_info, ihr_disabled, bounce, bounced, src_address (to be filled by server)
+   b{011000} s, 
+
+   // to_address: address prefix, wc, address
+   b{100} s, auction_wc 8 i, auction_addr 256 u,
+
+   // init coints + type
+   finish_ng Gram,
+   b{0} s,
+
+   // ihr_fee, fwd_fee, created_lt, created_at: 4 + 4 + 64 + 32 = 104 (to be filled by server)
+   0 104 u,
+
+   // no state init, body as slice
+   b{00} s,
+   in_msg_body <s s,
+b> =: request_body
