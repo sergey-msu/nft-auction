@@ -17,6 +17,10 @@ nft_owner_wc =: old_nft_owner_wc
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -38,6 +42,10 @@ exit_code 450 "Wrong exit code" ASSERT_EQUAL_INTS
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -68,6 +76,10 @@ bidder1_bid =: curr_winner_bid
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -102,6 +114,10 @@ max_bid =: curr_winner_bid
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -136,6 +152,10 @@ max_bid =: curr_winner_bid
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -171,6 +191,10 @@ bidder2_bid min_gas_amount - =: curr_winner_bid
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, bidder2_wc 8 i, bidder2_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b

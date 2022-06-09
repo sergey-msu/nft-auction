@@ -2,6 +2,8 @@
 
 
 int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
+int min_tons_for_storage() asm "100000000 PUSHINT"; ;; 0.1 TON
+int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
 
 
 (slice, slice, slice, cell, cell, cell) load_data() inline {
@@ -107,23 +109,30 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 } 
 
 
-() finish_auction(int my_balance, int msg_value, int query_id,
+() finish_auction(int my_balance, int fwd_fee, int query_id,
                   slice marketplace_address, slice nft_address, slice nft_owner_address,
                   cell marketplace_fee_params, cell royalty_params,
                   int auction_finish_time, int auction_salt, int sniper_before_time, int sniper_after_prolong,
                   int min_bid_value, int max_bid_value, int bid_step_value,
                   slice winner_address, int winner_bid, 
                   int finished?) impure {
-  throw_unless(447, msg_value >= min_gas_amount());
   throw_if(600, finished?);
+
+  int rest_amount = my_balance - min_gas_amount() - min_tons_for_storage() - transfer_invoke_fee() - fwd_fee;
+  throw_unless(800, rest_amount > 0);
 
   ;; if there is a winner: pay fees
   if (~ null?(winner_address)) {
     var (royalty_addr, royalty_numer, royalty_denom) = load_fees(royalty_params);
+    int royalty_amount = (winner_bid / royalty_denom) * royalty_numer;
+
     var (marketplace_fee_addr, marketplace_fee_numer, marketplace_fee_denom) = load_fees(marketplace_fee_params);
+    int marketplace_fee = (winner_bid / marketplace_fee_denom) * marketplace_fee_numer;
+
+    rest_amount -= (royalty_amount + marketplace_fee + 3 * fwd_fee);
+    throw_unless(801, rest_amount > 0);
 
     ;; royalty fees
-    int royalty_amount = (winner_bid / royalty_denom) * royalty_numer;
     var royalty_msg = begin_cell()
                         .store_uint(0x10, 6) ;; nobounce
                         .store_slice(royalty_addr)
@@ -134,7 +143,6 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     send_raw_message(royalty_msg, 1);
 
     ;; marketplace fees
-    int marketplace_fee = (winner_bid / marketplace_fee_denom) * marketplace_fee_numer;
     var marketplace_msg = begin_cell()
                             .store_uint(0x10, 6) ;; nobounce
                             .store_slice(marketplace_fee_addr)
@@ -146,29 +154,29 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; send winner's bid to NFT owner
     var owner_msg = begin_cell()
-            .store_uint(0x10, 6) ;; nobounce
-            .store_slice(nft_owner_address)
-            .store_coins(my_balance - marketplace_fee - royalty_amount)
-            .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-            .end_cell();
+                      .store_uint(0x10, 6) ;; nobounce
+                      .store_slice(nft_owner_address)
+                      .store_coins(rest_amount)
+                      .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+                    .end_cell();
 
     send_raw_message(owner_msg, 1);
   }
 
   slice new_nft_owner = null?(winner_address) ? nft_owner_address : winner_address;
 
-  ;; transfer NFT to new (or the same in case of no bids) owner
+  ;; transfer NFT to new (or the same in case of no bids) owner,
   var msg = begin_cell()
               .store_uint(0x18, 6) 
               .store_slice(nft_address)
-              .store_coins(0)
+              .store_coins(transfer_invoke_fee())
               .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
               .store_uint(op::transfer(), 32)
               .store_uint(query_id, 64)
               .store_slice(new_nft_owner) ;; new_owner_address
-              .store_slice(new_nft_owner) ;; response_address
+              .store_uint(0, 2) ;; response_address
               .store_int(0, 1)  ;; empty custom_payload
-              .store_coins(0)   ;; forward amount to new_owner_address
+              .store_coins(0)   ;; forward amount to old_owner_address
               .store_int(0, 1)  ;; empty forward_payload
             .end_cell();
 
@@ -186,7 +194,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 }
 
 
-() bid(int my_balance, int msg_value, int query_id,
+() bid(int my_balance, int msg_value, int fwd_fee, int query_id,
        slice marketplace_address, slice nft_address, slice nft_owner_address, 
        cell marketplace_fee_params, cell royalty_params,
        slice sender_address,
@@ -208,8 +216,9 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
   }
 
   ;; max bid occured: finish auction immediately
-  if ((~ null?(max_bid_value)) & (bid_value >= max_bid_value)) {
-    finish_auction(my_balance, msg_value, query_id,
+  int max_bid? = null?(max_bid_value) ? 0 : (bid_value >= max_bid_value);
+  if (max_bid?) {
+    finish_auction(my_balance, fwd_fee, query_id,
                    marketplace_address, nft_address, nft_owner_address,
                    marketplace_fee_params, royalty_params,
                    auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
@@ -250,33 +259,33 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 }
 
 
-() cancel_auction(int my_balance, int msg_value, int query_id,
+() cancel_auction(int my_balance, fwd_fee, int query_id,
                   slice marketplace_address, slice nft_address, slice nft_owner_address,
                   cell marketplace_fee_params, cell royalty_params,
-                  slice sender_address, 
                   int auction_finish_time, int auction_salt, int sniper_before_time, int sniper_after_prolong,
                   int min_bid_value, int max_bid_value, int bid_step_value,
                   slice curr_winner_addr, int curr_winner_bid,
                   int finished?) impure {
-  throw_unless(457, msg_value >= min_gas_amount());
-  throw_unless(458, equal_slices(sender_address, nft_owner_address));
   throw_if(600, finished?);
+
+  int rest_amount = my_balance - min_gas_amount() - min_tons_for_storage() - transfer_invoke_fee() - fwd_fee;
+  throw_unless(810, rest_amount > 0);
 
   ;; return last bid (if any)
   if (~ null?(curr_winner_addr)) {
-    return_bid_to_bidder(curr_winner_addr, curr_winner_bid - min_gas_amount());
+    throw_unless(811, rest_amount > fwd_fee);
+    return_bid_to_bidder(curr_winner_addr, curr_winner_bid - fwd_fee);
   }
-
   ;; return NFT back to owner
   var msg = begin_cell()
               .store_uint(0x10, 6) ;; nobounce
               .store_slice(nft_address)
-              .store_coins(0)
+              .store_coins(transfer_invoke_fee())
               .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
               .store_uint(op::transfer(), 32)
               .store_uint(query_id, 64) 
               .store_slice(nft_owner_address) ;; new_owner_address
-              .store_slice(nft_owner_address) ;; response_address;
+              .store_uint(0, 2) ;; response_address;
               .store_int(0, 1)  ;; empty custom_payload
               .store_coins(0)   ;; forward amount to new_owner_address
               .store_int(0, 1)  ;; empty forward_payload
@@ -304,6 +313,11 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     }
 
     slice sender_address = cs~load_msg_addr();
+    cs~load_msg_addr(); ;; skip dst
+    cs~load_coins(); ;; skip value
+    cs~skip_bits(1); ;; skip extracurrency collection
+    cs~load_coins(); ;; skip ihr_fee
+    int fwd_fee = cs~load_coins(); ;; we use message fwd_fee for estimation of forward_payload costs
 
     var (marketplace_address, nft_address, nft_owner_address, 
          marketplace_fee_params, royalty_params, auction_params) = load_data();
@@ -337,16 +351,18 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
       return ();
     }
 
+    ;; gas safeguard
+    throw_unless(447, msg_value >= min_gas_amount());
+
     ;; check time is up
     int time_up? = null?(auction_finish_time) ? 0 : (now() > auction_finish_time);
     if (time_up?) {
       ;; return bid back to sender
-      throw_unless(447, msg_value >= min_gas_amount());
-      return_bid_to_sender(sender_address, msg_value - min_gas_amount());
+      return_bid_to_sender(sender_address, msg_value);
 
       if (~ finished?) {
         ;; auction not finished yet: finish him
-        finish_auction(my_balance, msg_value, 0,
+        finish_auction(my_balance, fwd_fee, 0,
                        marketplace_address, nft_address, nft_owner_address,
                        marketplace_fee_params, royalty_params,
                        auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
@@ -360,7 +376,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; simple transfer - make a bid
     if (in_msg_body.slice_empty?()) {
-      bid(my_balance, msg_value, 0, 
+      bid(my_balance, msg_value, fwd_fee, 0, 
           marketplace_address, nft_address, nft_owner_address,
           marketplace_fee_params, royalty_params,
           sender_address,
@@ -380,7 +396,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; make a bid
     if (op == op::auction_bid()) { 
-      bid(my_balance, msg_value, query_id, 
+      bid(my_balance, msg_value, fwd_fee, query_id, 
           marketplace_address, nft_address, nft_owner_address,
           marketplace_fee_params, royalty_params,
           sender_address,
@@ -394,10 +410,10 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; cancel auction
     if (op == op::auction_cancel()) {
-      cancel_auction(my_balance, msg_value, query_id, 
+      throw_unless(458, equal_slices(sender_address, nft_owner_address));
+      cancel_auction(my_balance, fwd_fee, query_id, 
                      marketplace_address, nft_address, nft_owner_address,
                      marketplace_fee_params, royalty_params,
-                     sender_address, 
                      auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
                      min_bid_value, max_bid_value, bid_step_value,
                      curr_winner_address, curr_winner_bid,
@@ -409,7 +425,7 @@ int min_gas_amount() asm "50000000 PUSHINT"; ;; 0.05 TON
     ;; manually finish auction
     if (op == op::auction_finish()) {
       throw_unless(478, equal_slices(sender_address, nft_owner_address));
-      finish_auction(my_balance, msg_value, query_id,
+      finish_auction(my_balance, fwd_fee, query_id,
                      marketplace_address, nft_address, nft_owner_address, 
                      marketplace_fee_params, royalty_params,
                      auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,

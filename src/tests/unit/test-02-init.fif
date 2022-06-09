@@ -14,6 +14,10 @@
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b b> <s =: in_msg_body
@@ -29,6 +33,10 @@ exit_code 500 "Wrong exit code" ASSERT_EQUAL_INTS
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_wc 8 i, nft_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b 
@@ -46,6 +54,10 @@ exit_code 501 "Wrong exit code" ASSERT_EQUAL_INTS
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_wc 8 i, nft_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b

@@ -14,6 +14,10 @@
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b b> <s =: in_msg_body
@@ -78,6 +82,10 @@ runvmctx
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b b> <s =: in_msg_body

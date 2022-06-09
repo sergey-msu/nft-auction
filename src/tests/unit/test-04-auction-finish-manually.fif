@@ -8,12 +8,18 @@
 "setup-c7.fif" include
 "setup-states.fif" include
 
+nft_owner_addr =: old_nft_owner_addr
+nft_owner_wc =: old_nft_owner_wc
 
 // -------------------------- CASE #1: Auction finishing: wrong sender
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, other_wc 8 i, other_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b 
@@ -32,6 +38,10 @@ exit_code 478 "Wrong exit code" ASSERT_EQUAL_INTS
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -51,6 +61,10 @@ exit_code 447 "Wrong exit code" ASSERT_EQUAL_INTS
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -65,11 +79,15 @@ finished_state =: state
 exit_code 600 "Wrong exit code" ASSERT_EQUAL_INTS
 
 
-// -------------------------- CASE #4: Auction finishing success: no winner (no bids)
+// -------------------------- CASE #4: Auction finishing: no winner (no bids), insufficient balance
 
 <b 
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b 
@@ -78,6 +96,31 @@ b> =: in_msg_full
 b> <s =: in_msg_body
 
 70000000 =: msg_value
+init_state =: state
+
+"setup-runvmctx.fif" include
+
+exit_code 800 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #4: Auction finishing success: no winner (no bids)
+
+<b 
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
+b> =: in_msg_full
+
+<b 
+   4 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+70000000 =: msg_value
+200123001 =: my_balance
 init_state =: state
 
 "setup-runvmctx.fif" include
@@ -130,11 +173,15 @@ runvmctx
 "setup-assert-get-auction-data.fif" include
 
 
-// -------------------------- CASE #5: Auction finishing success: has winner
+// -------------------------- CASE #5: Auction finishing: has winner, insufficient balance
 
 <b
    b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
    b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
 b> =: in_msg_full
 
 <b
@@ -142,7 +189,32 @@ b> =: in_msg_full
    0 64 u, // query
 b> <s =: in_msg_body
 
-bidder1_bid =: my_balance
+420492000 =: my_balance
+70000000 =: msg_value
+bid_state =: state
+
+"setup-runvmctx.fif" include
+
+exit_code 801 "Wrong exit code" ASSERT_EQUAL_INTS
+
+
+// -------------------------- CASE #5: Auction finishing success: has winner
+
+<b
+   b{0100} s, // flags: int_msg_info, ihr_disabled, bounce, bounced
+   b{100} s, nft_owner_wc 8 i, nft_owner_addr 256 u, // sender address
+   b{00} s, // dst address
+   0 Gram, b{0} s,
+   0 Gram,
+   123000 Gram, // fwd_fee
+b> =: in_msg_full
+
+<b
+   4 32 u, // op
+   0 64 u, // query
+b> <s =: in_msg_body
+
+420492001 =: my_balance
 bidder1_addr =: nft_owner_addr
 70000000 =: msg_value
 bid_state =: state
