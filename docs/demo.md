@@ -73,6 +73,7 @@ Go to ``src/`` folder and run bash script:
 ``>  ./unit-tests.sh``
 
 After a couple of seconds you should see a tests passed message:
+
 ![](unit-tests.png)
 
 ## 3. Demo
@@ -172,7 +173,7 @@ Let's check auction info:
 
 ``>  python3 -m demo-tests auction info --addr EQAkZY7zoqEi_GhydU2reugEPixy5MNWHZ02Kmci4HRmVEAZ``
 
-[](auction-cancelled.png)
+![](auction-cancelled.png)
 
 Yep, it is cancelled, finished and can not be re-opened any more. Also note that NFT was returned to its previous owner:
 
@@ -229,7 +230,7 @@ which is correct.
 We can also  check the result in auction's wallet explorer: 
 https://sandbox.tonwhales.com/explorer/address/EQDtS4K3ZJDknk7lG9fc3RkntdUyVfCKBvaXBblBLoqAIxfR
 
-[](return-bid.png)
+![](return-bid.png)
 
 which tells us that previous bid has been returned to previous bidder. Great!
 
@@ -248,7 +249,7 @@ The bid returns to bidder except some fees:
 
 https://sandbox.tonwhales.com/explorer/address/EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs
 
-[](reject-bid.png)
+![](reject-bid.png)
 
 ### 3.10 Finish Auction
 
@@ -257,6 +258,6 @@ Simply execue the command
 
 ``>  python3 -m demo-tests auction finish --addr EQDtS4K3ZJDknk7lG9fc3RkntdUyVfCKBvaXBblBLoqAIxfR``
 
-[](reject-bid.png)
+![](auction-finish.png)
 
 Great! All the commissins are payed. Also note that auction has positive balance > 0.13 TON which is sufficient to cover it;s storage fees for a years.
