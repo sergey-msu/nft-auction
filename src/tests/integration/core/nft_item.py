@@ -1,7 +1,7 @@
 import base64
 
-from core.utils import addr_from_b64
-from core.contract_base import ContractBase
+from tests.integration.core.utils import addr_from_b64
+from tests.integration.core.contract_base import ContractBase
 
 
 class NftItem(ContractBase):
@@ -109,7 +109,7 @@ class NftItem(ContractBase):
                 'index': int(result[1][1], 16),
                 'collection_address': addr_from_b64(result[2][1]['object']['data']['b64'])['b'],
                 'owner_address': addr_from_b64(result[3][1]['object']['data']['b64'])['b'],
-                'content': base64.b64decode(result[4][1]['object']['data']['b64'])[1:].decode('utf-8'),
+                'content': base64.b64decode(result[4][1]['object']['data']['b64']).decode('utf-8'),
             }
 
         return None

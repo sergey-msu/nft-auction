@@ -25,7 +25,7 @@ def init():
   api = HttpApiProvider(**config['api'])
 
 
-def deploy(seed, wallet_addr, owner_addr, royalty_address, init_ng=50_000_000, send=True, private_key='wallet.pk', **kwargs):
+def deploy(seed, wallet_addr, owner_addr, royalty_addr, init_ng=50_000_000, send=True, private_key='wallet.pk', **kwargs):
     print('Deploying collection...')
 
     wallet = Wallet(builder, api, address=wallet_addr, pk_file=private_key)
@@ -37,7 +37,7 @@ def deploy(seed, wallet_addr, owner_addr, royalty_address, init_ng=50_000_000, s
       'royalty_factor': 5,             # 5% royalty
       'coll_init_ng':   init_ng,
       'owner_address':    owner_addr,
-      'royalty_address':  royalty_address,
+      'royalty_address':  royalty_addr,
     }
     collection.from_config(config)
     collection.deploy(send=send)
