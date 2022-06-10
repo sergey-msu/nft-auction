@@ -240,7 +240,7 @@ def get_auction_args(subparsers):
     subparser.add_argument(
         '-m', '--market_addr',
         help='Marketplace address',
-        required=True)
+        default='EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW')
     subparser.add_argument(
         '-i', '--item_addr',
         help='NFT item address',

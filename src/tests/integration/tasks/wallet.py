@@ -28,7 +28,7 @@ def seqno(private_key='wallet.pk', **kwargs):
   print('seqno:', wallet.seqno())
 
 
-def deploy(seed, send=True, generate_key=False, private_key='wallet.pk', **kwargs):
+def deploy(seed, send=True, generate_key=0, private_key='wallet.pk', **kwargs):
     print('Deploying wallet...')
 
     wallet = Wallet(builder, api, pk_file=private_key)
