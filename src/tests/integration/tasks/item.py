@@ -25,8 +25,6 @@ def init():
   api = HttpApiProvider(**config['api'])
 
 
-
-
 def mint(coll_addr, index, wallet_addr, owner_addr, coll_ng=70_000_000, init_ng=50_000_000, send=True, private_key='wallet.pk', **kwargs):
     print('Mininting NFT item...')
 

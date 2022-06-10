@@ -40,7 +40,7 @@ secret_path wallet_pk_file $+ load-keypair nip =: wallet_pk
 
 <b
    // int_msg_info, ihr_disabled, bounce, bounced, src_address (the latter will be filled by server)
-   b{010000} s, 
+   b{011000} s, 
 
    // to_address: address prefix, wc, address
    b{100} s, to_wc 8  i, to_addr 256 u,
