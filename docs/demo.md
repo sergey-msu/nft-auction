@@ -13,26 +13,26 @@ Implementation peculiarities:
 
 Top-level constants:
 
-> **min_gas_amount()** = 0.05 TON
-**int min_tons_for_storage()** = 0.1 TON
-**int transfer_invoke_fee()** = 0.05 TON
+> **min_gas_amount()** = 0.05 TON\
+**int min_tons_for_storage()** = 0.1 TON\
+**int transfer_invoke_fee()** = 0.05 TON\
 **fwd_fee** = to be set dynamically as forward fee from current message
 
 Expected exit codes:
 
-> **447** - initial gas safeguard violation. Should be:
-``msg_value >= min_gas_amount()``
-**450** - trying to make a bid less than min_bid. Should be:
-``msg_value >= min_bid_value + min_gas_amount()``
-**458** - trying to cancel auction from address different from ``nft_address``
-**478** - trying to cancel auction from address different from ``nft_address`` of ``marketplace_address``
-**500** - trying to make a first call to uninitialized auction from address different from ``nft_address``
-**501** - trying to make a first call to uninitialized auction with wrong operation code
-**600** - trying to finish or cancel auction that already finished
-**800** - trying to finish auction with insufficient balance. Should be:
-``my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee``
-**801** - the same as 800 but in case of existing bidder. Auction balance should be:
-``my_balance > royalty_amount + marketplace_fee  min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + 4*fwd_fee``
+> **447** - initial gas safeguard violation. Should be:\
+``msg_value >= min_gas_amount()``\
+**450** - trying to make a bid less than min_bid. Should be:\
+``msg_value >= min_bid_value + min_gas_amount()``\
+**458** - trying to cancel auction from address different from ``nft_address``\
+**478** - trying to cancel auction from address different from ``nft_address`` of ``marketplace_address``\
+**500** - trying to make a first call to uninitialized auction from address different from ``nft_address``\
+**501** - trying to make a first call to uninitialized auction with wrong operation code\
+**600** - trying to finish or cancel auction that already finished\
+**800** - trying to finish auction with insufficient balance. Should be:\
+``my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee``\
+**801** - the same as 800 but in case of existing bidder. Auction balance should be:\
+``my_balance > royalty_amount + marketplace_fee  min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + 4*fwd_fee``\
 **810** - trying to cancel auction with insufficient balance. Should be:
 ``my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee``
 **811** - the same as 810 but in case of existing bidder. Auction balance should be:
