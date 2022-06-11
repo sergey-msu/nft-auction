@@ -1,8 +1,8 @@
 import yaml
 
-from tests.integration.core.builder import Builder
-from tests.integration.core.http_api_provider import HttpApiProvider
-from tests.integration.core.wallet import Wallet
+from demo.core.builder import Builder
+from demo.core.http_api_provider import HttpApiProvider
+from demo.core.wallet import Wallet
 
 
 builder = None
@@ -10,7 +10,7 @@ api = None
 
 
 def init():
-  with open('tests/integration/configs/app.yaml') as f:
+  with open('demo/configs/app.yaml') as f:
       config = yaml.safe_load(f)
 
   global builder

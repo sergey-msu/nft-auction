@@ -46,9 +46,10 @@ Top-level constants:
 1. ``docs/`` - project docs.
 2. ``secrets/`` - test wallets private keys. One single key ``wallet.pk`` is used for all test wallets here just for convenience.
 3. ``src/contracts/`` - func smart contract. Auction contract - ``nft-auction.fc``. The rest are taken from [standard](https://github.com/ton-blockchain/token-contract/tree/main/nft).
-4. ``src/requests/`` - fift API TON blockchain scripts .
-5. ``src/tests/integration`` - integration tests, i.e. a simple python CLI auction demo (see below).
-6. ``src/tests/unit`` - fift unit tests.
+4. ``src/demo/`` - demo in python: API wrappers, Dash site.
+5. ``src/requests/`` - fift API TON blockchain scripts.
+6. ``src/tests/integration`` - integration tests, i.e. a simple python CLI auction demo (see below).
+7. ``src/tests/unit`` - fift unit tests.
 
 
 ## 4. Project Set-Up
@@ -81,6 +82,10 @@ After a couple of seconds you should see a tests passed message:
 
 ![](docs/unit-tests.png)
 
-## 6. Demo
+## 6. Demo CLI
 
 See [here](docs/demo.md).
+
+## 7. Demo Dite
+
+See [here](docs/site.md).

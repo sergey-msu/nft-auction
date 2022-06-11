@@ -1,4 +1,4 @@
-from tests.integration.core.contract_base import ContractBase
+from demo.core.contract_base import ContractBase
 
 
 class NftMarketplace(ContractBase):

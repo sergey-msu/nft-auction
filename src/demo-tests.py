@@ -1,12 +1,12 @@
 import sys
 import argparse
-from tests.integration.tasks.auction import run_auction
 
-from tests.integration.tasks.wallet import run_wallet
-from tests.integration.tasks.marketplace import run_marketplace
-from tests.integration.tasks.collection import run_collection
-from tests.integration.tasks.item import run_item
-from tests.integration.tasks.auction import run_auction
+from tests.integration.auction import run_auction
+from tests.integration.wallet import run_wallet
+from tests.integration.marketplace import run_marketplace
+from tests.integration.collection import run_collection
+from tests.integration.item import run_item
+from tests.integration.auction import run_auction
 
 
 def get_wallet_args(subparsers):
