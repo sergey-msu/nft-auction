@@ -17,7 +17,7 @@ Let's create an NFT item, auction and try to place some bids.
 
 Below is step-by-step demo guide.
 
-### 1 Create an NFT collection:
+### 1. Create an NFT collection:
 
 ``>  python3 -m demo-tests collection deploy --seed 12345``
 
@@ -31,7 +31,7 @@ Check that the collection was deployed normally by invoke its contract get metho
 
 ![](coll-info.png)
 
-### 2 Mint NFT Item
+### 2. Mint NFT Item
 
 The following command will deploy NFT from previously created collection with appropriate index: 
 
@@ -45,19 +45,17 @@ Count to 10 and check NFT info (use your address of newly minted NFT):
 
 ![](item-info.png)
 
-### 3 Use NFT marketplace:
+### 3. Use NFT marketplace:
 
 Marketplace with default parameter is already deployed to Whales sandbox: 
 https://sandbox.tonwhales.com/explorer/address/EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW
 so one can simply use ``EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW`` address without deploying new one.
 
-### 4 Deploy new auction!
+### 4. Deploy new auction!
 
-By now we have an NFT ``EQAKX9FaRnupng_-Qi2QpvYzYsA_DKXh7MiaTikyx5aodS90`` from 3.2 and markeplace from 3.3. Let's deploy new auction by running command
+By now we have an NFT ``EQAKX9FaRnupng_-Qi2QpvYzYsA_DKXh7MiaTikyx5aodS90`` from 2 and markeplace from 3. Let's deploy new auction by running command
 
 ``>  python3 -m demo-tests auction new --seed 12345 --item EQAKX9FaRnupng_-Qi2QpvYzYsA_DKXh7MiaTikyx5aodS90``
-
-![](auction-deploy.png)
 
 Check auction info after some time:
 
@@ -65,12 +63,12 @@ Check auction info after some time:
 
 ![](auction-deployed.png)
 
-One can see ``'nft_owner_address': None``. It means that auction was deployed by marketplace but not initialized by its NFT yet.
+One can see that ``'nft_owner_address': None``. It means that auction was deployed by marketplace but not initialized by its NFT yet.
 Let's get do it.
 
-### 5 Start auction
+### 5. Start auction
 
-Let's start deployed auction by send message from NFT by CLI command:
+Let's start deployed auction by send message from NFT to auction by the following CLI command:
 
 ``>  python3 -m demo-tests auction start --addr EQAkZY7zoqEi_GhydU2reugEPixy5MNWHZ02Kmci4HRmVEAZ``
 
@@ -82,7 +80,7 @@ Check auction info after some time:
 
 Here we see ``'nft_owner_address': EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs`` which means that NFT has approved the auction and it's started.
 
-### 6 Cancel auction
+### 6. Cancel auction
 
 Before try to make any bids let's try cancel newly created auction.
 This can be simply done by a command
@@ -101,7 +99,7 @@ Yep, it is cancelled, finished and can not be re-opened any more. Also note that
 
 ``'owner_address': 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'``
 
-### 7 Create new auction and place a bid
+### 7. Create new auction and place a bid
 
 Let's create another auction for the same NFT (please note different auction seed below):
 
@@ -133,7 +131,7 @@ Here we can see our current bid:
 The bid set is slightly less than 2 TON due to commissions.
 Great! Let's place another one.
 
-### 8 Place an overbid
+### 8. Place an overbid
 
 Let's place another bid thar overbids previos one. Use another default wallet, say ``EQBFC3N-lJCkoxdKTzL6SsIzDMz8_A5x1zo3hgLbraTTN0hB``.
 
@@ -154,7 +152,7 @@ https://sandbox.tonwhales.com/explorer/address/EQDtS4K3ZJDknk7lG9fc3RkntdUyVfCKB
 
 which tells us that previous bid has been returned to previous bidder. Great!
 
-### 9 Place an underbid
+### 9. Place an underbid
 
 It is neccesary to know that one must overbid not only visible current value but also fome auction fees. Current bid is 2950000000 nTON. If one wants to overbid this bid he must bid not less than
 
@@ -171,7 +169,7 @@ https://sandbox.tonwhales.com/explorer/address/EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01
 
 ![](reject-bid.png)
 
-### 10 Finish Auction
+### 10. Finish Auction
 
 Finally, let's finish our auction.
 Simply execue the command
