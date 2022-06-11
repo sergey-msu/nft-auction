@@ -1,89 +1,6 @@
-# TON NFT Auction
-Special NFT Auction Smart contract for [TON](https://ton.org/) blockchain.
+# TON NFT Auction Demo
 
-## 1. Solution Overview
-
-Problem statement can be found [here](https://telegra.ph/TON-NFT-Auction-Contract-Product--Technical-Requirements-06-03)
-
-Solution github repository: [link](https://github.com/sergey-msu/nft-auction)
-
-Implementation peculiarities:
-
-1. Auction contract fees and commissions can be set in such a way that its own balance (the balance of the contract minus the current bid) is slightly increased with any operation with it. Thus, operations with a contract cannot reset its balance.
-2. The minimum ``min_storage_fee`` has been introduced to the contract. Transactions leading to a decrease in the contract balance below this value are not accepted.
-
-Top-level constants:
-
-> **min_gas_amount()** = 0.05 TON\
-**int min_tons_for_storage()** = 0.1 TON\
-**int transfer_invoke_fee()** = 0.05 TON\
-**fwd_fee** = to be set dynamically as forward fee from current message
-
-Expected exit codes:
-
-> **447** - initial gas safeguard violation. Should be:\
-``msg_value >= min_gas_amount()``\
-**450** - trying to make a bid less than min_bid. Should be:\
-``msg_value >= min_bid_value + min_gas_amount()``\
-**458** - trying to cancel auction from address different from ``nft_address`` of ``marketplace_address``\
-**478** - trying to finish auction from address different from ``nft_address`` (before deadine)\
-**500** - trying to make a first call to uninitialized auction from address different from ``nft_address``\
-**501** - trying to make a first call to uninitialized auction with wrong operation code\
-**600** - trying to finish or cancel auction that already finished\
-**800** - trying to finish auction with insufficient balance. Should be:\
-``my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee``\
-**801** - the same as 800 but in case of existing bidder. Auction balance should be:\
-``my_balance > royalty_amount + marketplace_fee + min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + 4*fwd_fee``\
-**810** - trying to cancel auction with insufficient balance. Should be:\
-``my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee``\
-**811** - the same as 810 but in case of existing bidder. Auction balance should be:\
-``my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + 2*fwd_fee``
-
-
-Project structure:
-
-1. ``docs/`` - project docs
-2. ``secrets/`` - test wallets private keys. One single key ``wallet.pk`` is used for all test wallets here just for convenience.
-3. ``src/contracts/`` - func smart contract. Auction contract - ``nft-auction.fc``. The rest are taken from [standard](https://github.com/ton-blockchain/token-contract/tree/main/nft).
-4. ``src/requests/`` - fift API TON blockchain scripts 
-5. ``src/tests/integration`` - integration tests, i.e. a simple python CLI auction demo (see below).
-6. ``src/tests/unit`` - fift unit tests.
-
-
-## 1. Project Set-Up
-
-To run unit tests on local PC and demonstrate the functionality of the auction in testnet, it is neccessary to have
-
-1. Ubuntu 20+ -based linux local.
-2. Python 3.
-3. TON blockchain local environment [sources](https://github.com/newton-blockchain/ton) (compiled func and fift interpretators) - [installation](https://github.com/raiym/astonished/blob/master/Dockerfile).
-
-Clone github project:\
-``>  git clone git@github.com:sergey-msu/nft-auction.git``
-
-Go to ``src/tests/integration/configs`` and change the following values in ``app.yaml``\
-``fift_path: '/opt/ton/crypto/fift'``\
-``fift_executer_path: '/opt/liteclient-build/crypto/fift'``\
-``func_compiler_path: '/opt/liteclient-build/crypto/func'``\
-to your correct paths.
-
-## 2. Run Unit Tests
-
-Go to ``src/`` folder and run bash script:
-
-``>  cd src/``\
-``>  ./unit-tests.sh``
-
-After a couple of seconds you should see a tests passed message:
-
-![](unit-tests.png)
-
-## 3. Demo
-
-Testing is more 
-
-
-Testing is a slightly better done in [whales sandbox](https://sandbox.tonwhales.com/explorer), because it conveniently groups incoming and outgoing transactions and also displays exit error codes.
+Demonstartion testing is a slightly better done in [whales sandbox](https://sandbox.tonwhales.com/explorer), because it conveniently groups incoming and outgoing transactions and also displays exit error codes.
 
 For convenience of testing some wallets are deployed and supplied with test coins:
 
@@ -99,7 +16,7 @@ Let's create an NFT item, auction and try to place some bids.
 
 Below is step-by-step demo guide.
 
-### 3.1 Create an NFT collection:
+### 1 Create an NFT collection:
 
 ``>  python3 -m demo-tests collection deploy --seed 12345``
 
@@ -113,7 +30,7 @@ Check that the collection was deployed normally by invoke its contract get metho
 
 ![](coll-info.png)
 
-### 3.2 Mint NFT Item
+### 2 Mint NFT Item
 
 The following command will deploy NFT from previously created collection with appropriate index: 
 
@@ -127,13 +44,13 @@ Count to 10 and check NFT info (use your address of newly minted NFT):
 
 ![](item-info.png)
 
-### 3.3 Use NFT marketplace:
+### 3 Use NFT marketplace:
 
 Marketplace with default parameter is already deployed to Whales sandbox: 
 https://sandbox.tonwhales.com/explorer/address/EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW
 so one can simply use ``EQDY2SwQsRuFa_JJZkVMiUtCXh7Eld35lGNLU8kqjlrhRQAW`` address without deploying new one.
 
-### 3.4 Deploy new auction!
+### 4 Deploy new auction!
 
 By now we have an NFT ``EQAKX9FaRnupng_-Qi2QpvYzYsA_DKXh7MiaTikyx5aodS90`` from 3.2 and markeplace from 3.3. Let's deploy new auction by running command
 
@@ -150,7 +67,7 @@ Check auction info after some time:
 One can see ``'nft_owner_address': None``. It means that auction was deployed by marketplace but not initialized by its NFT yet.
 Let's get do it.
 
-### 3.5 Start auction
+### 5 Start auction
 
 Let's start deployed auction by send message from NFT by CLI command:
 
@@ -164,7 +81,7 @@ Check auction info after some time:
 
 Here we see ``'nft_owner_address': EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs`` which means that NFT has approved the auction and it's started.
 
-### 3.6 Cancel auction
+### 6 Cancel auction
 
 Before try to make any bids let's try cancel newly created auction.
 This can be simply done by a command
@@ -183,7 +100,7 @@ Yep, it is cancelled, finished and can not be re-opened any more. Also note that
 
 ``'owner_address': 'EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs'``
 
-### 3.7 Create new auction and place a bid
+### 7 Create new auction and place a bid
 
 Let's create another auction for the same NFT (please note different auction seed below):
 
@@ -215,7 +132,7 @@ Here we can see our current bid:
 The bid set is slightly less than 2 TON due to commissions.
 Great! Let's place another one.
 
-### 3.8 Place an overbid
+### 8 Place an overbid
 
 Let's place another bid thar overbids previos one. Use another default wallet, say ``EQBFC3N-lJCkoxdKTzL6SsIzDMz8_A5x1zo3hgLbraTTN0hB``.
 
@@ -236,7 +153,7 @@ https://sandbox.tonwhales.com/explorer/address/EQDtS4K3ZJDknk7lG9fc3RkntdUyVfCKB
 
 which tells us that previous bid has been returned to previous bidder. Great!
 
-### 3.9 Place an underbid
+### 9 Place an underbid
 
 It is neccesary to know that one must overbid not only visible current value but also fome auction fees. Current bid is 2950000000 nTON. If one wants to overbid this bid he must bid not less than
 
@@ -253,7 +170,7 @@ https://sandbox.tonwhales.com/explorer/address/EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01
 
 ![](reject-bid.png)
 
-### 3.10 Finish Auction
+### 10 Finish Auction
 
 Finally, let's finish our auction.
 Simply execue the command
