@@ -30,11 +30,14 @@ def deploy(seed,
            market_num=10, market_den=100, 
            royalty_addr=None, send=True,
            royalty_num=5, royalty_den=100,
-           auc_fin=None, snip_before=5, snip_after=10,
+           auc_fin=None, snip_before=300, snip_after=600,
            min_bid=1_000_000_000, max_bid=5_000_000_000, bid_step=500_000_000,
            init_ng=55_000_000,
            private_key='wallet.pk', **kwargs):
     print('Deploying new auction...')
+
+    if max_bid < 0:
+        max_bid = None
 
     wallet = Wallet(builder, api, address=wallet_addr, pk_file=private_key)
 

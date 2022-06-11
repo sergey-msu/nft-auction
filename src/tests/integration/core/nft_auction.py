@@ -183,19 +183,20 @@ class NftAuction(ContractBase):
     def get_auction_data(self):
         result = self.api.run_get(self.address, 'get_auction_data')
 
-        if result and len(result) == 11:
+        if result and len(result) == 12:
             return {
                 'auction_finish_time': int(result[0][1], 16) if result[0][0] == 'num' else None,
-                'auction_salt': int(result[1][1], 16),
-                'sniper_before_time': int(result[2][1], 16),
-                'sniper_after_prolong': int(result[3][1], 16),
-                'min_bid_value': int(result[4][1], 16),
-                'max_bid_value': int(result[5][1], 16) if result[0][1] else None,
-                'bid_step_value': int(result[6][1], 16),
-                'curr_winner_address': addr_from_b64(result[7][1]['object']['data']['b64'])['b'] if result[7][0] == 'cell' else None,
-                'curr_winner_bid': int(result[8][1], 16),
-                'is_finished': int(result[9][1], 16) == -1,
-                'is_cancelled': int(result[10][1], 16) == -1,
+                'auction_current_time': int(result[1][1], 16),
+                'auction_salt': int(result[2][1], 16),
+                'sniper_before_time': int(result[3][1], 16),
+                'sniper_after_prolong': int(result[4][1], 16),
+                'min_bid_value': int(result[5][1], 16),
+                'max_bid_value': int(result[6][1], 16) if result[6][1] == 'num' else None,
+                'bid_step_value': int(result[7][1], 16),
+                'curr_winner_address': addr_from_b64(result[8][1]['object']['data']['b64'])['b'] if result[8][0] == 'cell' else None,
+                'curr_winner_bid': int(result[9][1], 16),
+                'is_finished': int(result[10][1], 16) == -1,
+                'is_cancelled': int(result[11][1], 16) == -1,
             }
 
         return None

@@ -1,5 +1,6 @@
-13 0 reverse
+14 0 reverse
 =: out_auction_finish_time
+=: out_auction_current_time
 =: out_auction_salt
 =: out_sniper_before_time
 =: out_sniper_after_prolong
@@ -12,6 +13,7 @@
 =: out_is_cancelled
 
 out_auction_finish_time auction_finish_time "Wrong auction_finish_time" ASSERT_EQUAL_INTS
+out_auction_current_time now_time "Wrong now_time" ASSERT_EQUAL_INTS
 out_auction_salt auction_salt "Wrong auction_salt" ASSERT_EQUAL_INTS
 out_sniper_before_time sniper_before_time "Wrong sniper_before_time" ASSERT_EQUAL_INTS
 out_sniper_after_prolong sniper_after_prolong "Wrong sniper_after_prolong" ASSERT_EQUAL_INTS

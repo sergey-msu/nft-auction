@@ -469,5 +469,13 @@ var get_marketplace_fee_data() method_id {
 var get_auction_data() method_id {
   var (_, _, nft_owner_address, _, _, auction_params) = load_data();
   var initialized? = nft_owner_address.slice_bits() > 2;
-  return load_auction_data(auction_params, initialized?);
+  var (auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
+       min_bid_value, max_bid_value, bid_step_value,
+       curr_winner_address, curr_winner_bid,
+       finished?, cancelled?) = load_auction_data(auction_params, initialized?);
+
+  return (auction_finish_time, now(), auction_salt, sniper_before_time, sniper_after_prolong,
+          min_bid_value, max_bid_value, bid_step_value,
+          curr_winner_address, curr_winner_bid,
+          finished?, cancelled?);
 }

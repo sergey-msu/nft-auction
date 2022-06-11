@@ -276,14 +276,14 @@ def get_auction_args(subparsers):
         default=None)
     subparser.add_argument(
         '-sb', '--snip_before',
-        help='Sniper before deadline (min)',
+        help='Sniper before deadline (sec)',
         type=int,
-        default=5)
+        default=300)
     subparser.add_argument(
         '-sa', '--snip_after',
-        help='Sniper after deadline (min)',
+        help='Sniper after deadline (sec)',
         type=int,
-        default=10)
+        default=600)
     subparser.add_argument(
         '-mnb', '--min_bid',
         help='Min bid',
