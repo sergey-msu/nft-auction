@@ -1,8 +1,8 @@
 # TON NFT Auction Demo
 
-Demonstartion testing is a slightly better done in [whales sandbox](https://sandbox.tonwhales.com/explorer), because it conveniently groups incoming and outgoing transactions and also displays exit error codes.
+Demonstration can be done slightly better in [whales sandbox](https://sandbox.tonwhales.com/explorer), because it conveniently groups incoming and outgoing transactions and also displays exit error codes.
 
-For convenience of testing some wallets are deployed and supplied with test coins:
+For convenience of testing some wallets are already deployed and supplied with test coins:
 
 - [EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs](https://sandbox.tonwhales.com/explorer/address/EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs) - main wallet that sends all the command transactions to auction, marketplace et.
 - [EQBFC3N-lJCkoxdKTzL6SsIzDMz8_A5x1zo3hgLbraTTN0hB](https://sandbox.tonwhales.com/explorer/address/EQBFC3N-lJCkoxdKTzL6SsIzDMz8_A5x1zo3hgLbraTTN0hB) - bidder #1 wallet
@@ -10,6 +10,7 @@ For convenience of testing some wallets are deployed and supplied with test coin
 
 All the wallets have the same private key ``secrets/wallet.pk``.
 
+OK, let's get started 🦕.
 Let's create an NFT item, auction and try to place some bids.
 
 ``>  cd src/``
@@ -112,7 +113,7 @@ Start newly created auction:
 
 ``>  python3 -m demo-tests auction start --addr EQDtS4K3ZJDknk7lG9fc3RkntdUyVfCKBvaXBblBLoqAIxfR``
 
-It's time to place a bid. 
+It's time to place a bid 💸. 
 Bid can be done as a simple transaction with sufficient amount.
 Here for convenience we will use the same python CLI as before.
 
@@ -179,4 +180,6 @@ Simply execue the command
 
 ![](auction-finish.png)
 
-Great! All the fees are payed. Also note that auction has positive balance > 0.13 TON which is sufficient to cover it's storage fees for a years.
+Great 🥳🎉🎊! All the fees are payed. Also note that auction has positive balance > 0.13 TON which is sufficient to cover it's storage fees for a years.
+
+All other use-cases (anti-sniping, auction finishing by deadline etc.) can also be done this way.
