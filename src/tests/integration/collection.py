@@ -1,4 +1,3 @@
-from typing import Collection
 import yaml
 from pprint import pprint
 
