@@ -32,3 +32,14 @@
 .red-btn:active {
     background-color: #a30000;
 }
+
+.ton-btn {
+    background: url("ton.svg") no-repeat;
+    background-position: center center; 
+    background-size: 110% 110%; 
+}
+.ton-btn:active {
+    background: url("ton_pressed.svg");
+    background-position: center center; 
+    background-size: 110% 110%; 
+}

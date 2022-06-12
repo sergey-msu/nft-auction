@@ -116,8 +116,6 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
                   int min_bid_value, int max_bid_value, int bid_step_value,
                   slice winner_address, int winner_bid, 
                   int finished?) impure {
-  throw_if(600, finished?);
-
   int rest_amount = my_balance - min_gas_amount() - min_tons_for_storage() - transfer_invoke_fee() - fwd_fee;
   throw_unless(800, rest_amount > 0);
 
@@ -261,8 +259,6 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
                   int min_bid_value, int max_bid_value, int bid_step_value,
                   slice curr_winner_addr, int curr_winner_bid,
                   int finished?) impure {
-  throw_if(600, finished?);
-
   int rest_amount = my_balance - min_gas_amount() - min_tons_for_storage() - transfer_invoke_fee() - fwd_fee;
   throw_unless(810, rest_amount > 0);
 
@@ -405,6 +401,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; cancel auction
     if (op == op::auction_cancel()) {
+      throw_if(600, finished?);
       throw_unless(458, equal_slices(sender_address, nft_owner_address) |
                         equal_slices(sender_address, marketplace_address));
       cancel_auction(my_balance, fwd_fee, query_id, 
@@ -420,6 +417,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
 
     ;; manually finish auction
     if (op == op::auction_finish()) {
+      throw_if(600, finished?);
       throw_unless(478, equal_slices(sender_address, nft_owner_address));
       finish_auction(my_balance, fwd_fee, query_id,
                      marketplace_address, nft_address, nft_owner_address, 

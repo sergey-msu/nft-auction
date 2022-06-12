@@ -40,14 +40,18 @@ def get_result_link_tr(label, id, value, href):
             ])
 
 
-def get_auction_param_tr(label, id, placeholder=None, width=400, value='', pattern=None):
-    return html.Tr([html.Td(label, style={'text-align': 'right'}), 
-                    html.Td(dcc.Input(id=id, value=value, type='text', placeholder=placeholder or label.lower(),
+def get_auction_param_tr(label, id, placeholder=None, width=400, value='', pattern=None, align='center', after=None):
+    value_td = [dcc.Input(id=id, value=value, type='text', placeholder=placeholder or label.lower(),
                             pattern=pattern,
                             style={'width': f'{width}px',
                                     'height': '25px',
                                     'text-align': 'center',
-                                    'margin': '0 10px'}))
+                                    'margin': '0 10px'})]
+    if after:
+        value_td.append(after)
+
+    return html.Tr([html.Td(label, style={'text-align': 'right'}), 
+                    html.Td(value_td, style={'text-align': align})
             ])
 
 
@@ -206,7 +210,7 @@ auction_div = html.Div([
     ], style={'padding': '0 0 25px 0'})
 
 
-# auction operations
+# auction actions
 fun_div = html.Div([
         html.Label(children='Have Fun', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
         html.Div(style={'margin': '10px'}),
@@ -214,40 +218,45 @@ fun_div = html.Div([
         html.Table(
             html.Tbody([
                 get_auction_param_tr('Auction Address', 'auction-addr-input', pattern='^.{48}$'),
-                get_auction_param_tr('From Address', 'from-addr-input', value=WALLET1, pattern='^.{48}$'),
+                get_auction_param_tr('Bidder Address', 'bidder-addr-input', pattern='^.{48}$'),
+                get_auction_param_tr('Bid', 'bidder-bid-input', pattern='^(\d+(\.\d+)?)$', width=40, align='left',
+                    after=html.Button(children='1', id='bid-auction-btn', className='ton-btn',
+                                      title='Place a bid',
+                                      style={'height': '35px', 'width': '35px', 'border-radius': '18px', 'color': 'transparent'})
+                ),
             ]),
             style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
         ),
 
         html.Div(style={'margin': '20px'}),
         html.Button('Info', id='info-auction-btn', className='grey-btn',
-            style={'width': '110px',
-                    'height': '30px',
-                    'borderRadius': '15px 15px',
-                    'borderWidth': '3',
-                    'margin': '0 10px',
-                    'color': 'white'}),
+                    style={'width': '110px',
+                            'height': '30px',
+                            'borderRadius': '15px 15px',
+                            'borderWidth': '3',
+                            'margin': '0 10px',
+                            'color': 'white'}),
         html.Button('Start', id='start-auction-btn', className='green-btn',
-            style={'width': '110px',
-                    'height': '30px',
-                    'borderRadius': '15px 15px',
-                    'borderWidth': '3',
-                    'margin': '0 10px',
-                    'color': 'white'}),
+                    style={'width': '110px',
+                            'height': '30px',
+                            'borderRadius': '15px 15px',
+                            'borderWidth': '3',
+                            'margin': '0 10px',
+                            'color': 'white'}),
         html.Button('Cancel', id='cancel-auction-btn', className='yellow-btn',
-            style={'width': '110px',
-                    'height': '30px',
-                    'borderRadius': '15px 15px',
-                    'borderWidth': '3',
-                    'margin': '0 10px',
-                    'color': 'white'}),
+                    style={'width': '110px',
+                            'height': '30px',
+                            'borderRadius': '15px 15px',
+                            'borderWidth': '3',
+                            'margin': '0 10px',
+                            'color': 'white'}),
         html.Button('Finish', id='finish-auction-btn', className='red-btn',
-            style={'width': '110px',
-                    'height': '30px',
-                    'borderRadius': '15px 15px',
-                    'borderWidth': '3',
-                    'margin': '0 10px',
-                    'color': 'white'}),
+                    style={'width': '110px',
+                            'height': '30px',
+                            'borderRadius': '15px 15px',
+                            'borderWidth': '3',
+                            'margin': '0 10px',
+                            'color': 'white'}),
 
         html.Div(style={'margin': '20px'}),
         html.Label(id='message-label', style={'font-size': '12pt', 'color': 'blue'}),

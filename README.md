@@ -86,6 +86,6 @@ After a couple of seconds you should see a tests passed message:
 
 See [here](docs/demo.md).
 
-## 7. Demo Dite
+## 7. Demo Site
 
 See [here](docs/site.md).

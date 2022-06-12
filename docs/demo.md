@@ -6,7 +6,7 @@ For convenience of testing some wallets are already deployed and supplied with t
 
 - [EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs](https://sandbox.tonwhales.com/explorer/address/EQBR94p4TAivOi9mpGIoi-U2OH_TwuP01GfBtXf9QLMt_xBs) - main wallet that sends all the command transactions to auction, marketplace et.
 - [EQBFC3N-lJCkoxdKTzL6SsIzDMz8_A5x1zo3hgLbraTTN0hB](https://sandbox.tonwhales.com/explorer/address/EQBFC3N-lJCkoxdKTzL6SsIzDMz8_A5x1zo3hgLbraTTN0hB) - bidder #1 wallet
-- [EQDj86RXZrSzO-MN5gjgRjuMDucqATYq2kcamMQZZhAbY4j0](https://sandbox.tonwhales.com/explorer/address/EQDj86RXZrSzO-MN5gjgRjuMDucqATYq2kcamMQZZhAbY4j0) - bidder #2 wallet
+- [EQAJbWNw7QmNi3I2kAPGELcvc-u_LEVnSSee9KrsB23LbgwL](https://sandbox.tonwhales.com/explorer/address/EQAJbWNw7QmNi3I2kAPGELcvc-u_LEVnSSee9KrsB23LbgwL) - bidder #2 wallet
 
 All the wallets have the same private key ``secrets/wallet.pk``.
 

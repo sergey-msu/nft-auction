@@ -238,18 +238,23 @@ def auction_info(n_clicks, auction_addr):
     Input('start-auction-btn', 'n_clicks'),
     Input('cancel-auction-btn', 'n_clicks'),
     Input('finish-auction-btn', 'n_clicks'),
-    State('auction-addr-input', 'value'),
+    Input('bid-auction-btn', 'n_clicks'),
+    [State('auction-addr-input', 'value'),
+     State('bidder-addr-input', 'value'),
+     State('bidder-bid-input', 'value')],
     prevent_initial_call=True
 )
-def update_graph(n1, n2, n3, value):
+def update_graph(n1, n2, n3, n4, auction_addr, bidder_addr=None, bidder_bid=None):
     triggered_id = ctx.triggered_id
     print(triggered_id)
     if triggered_id == 'start-auction-btn':
-         return auction_start(value)
+         return auction_start(auction_addr)
     if triggered_id == 'cancel-auction-btn':
-         return auction_cancel(value)
+         return auction_cancel(auction_addr)
     if triggered_id == 'finish-auction-btn':
-         return auction_finish(value)
+         return auction_finish(auction_addr)
+    if triggered_id == 'bid-auction-btn':
+         return auction_bid(auction_addr, bidder_addr, bidder_bid)
 
 
 def auction_start(auction_addr):
@@ -286,6 +291,19 @@ def auction_finish( auction_addr):
     auction.finish(finish_ng=FINISH_NG, send=True)
 
     return ['Auction finish request sended. Wait ~20 sec and press Info']
+
+
+def auction_bid(auction_addr, bidder_addr, amount):
+    print('Place a bid...')
+
+    amount = int(10**9 * float(amount))
+    if amount > 10_000_000_000:
+        raise ValueError('Bid is too much for testing')
+
+    bidder = Wallet(BUILDER, API, address=bidder_addr, pk_file=PRIVATE_KEY)
+    bidder.transfer_money(to=auction_addr, amount=amount, send=True)
+
+    return ['Bid placed. Wait ~20 sec and press Info']
 
 
 if __name__ == '__main__':
