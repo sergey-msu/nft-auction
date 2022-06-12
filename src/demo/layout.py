@@ -28,19 +28,65 @@ def exit_code_tr(code, text, details):
             ], title=details)
 
 
+def get_result_tr(label, id):
+    return html.Tr([html.Td(label, style={'text-align': 'right'}), 
+                    html.Td('', id=id, style={'text-align': 'left'}),
+            ])
+
+
+def get_result_link_tr(label, id, value, href):
+    return html.Tr([html.Td(label, style={'text-align': 'right'}), 
+                    dcc.Link(id=id, children=value, href=href, target='_blank', style={'font-size': 'small'}),
+            ])
+
+
+def get_auction_param_tr(label, id, placeholder=None, width=400, value='', pattern=None):
+    return html.Tr([html.Td(label, style={'text-align': 'right'}), 
+                    html.Td(dcc.Input(id=id, value=value, type='text', placeholder=placeholder or label.lower(),
+                            pattern=pattern,
+                            style={'width': f'{width}px',
+                                    'height': '25px',
+                                    'text-align': 'center',
+                                    'margin': '0 10px'}))
+            ])
+
+
+def get_auction_deadline_param_tr(label, id, placeholder=None, width=400, value='', pattern=None):
+    return html.Tr([html.Td(label, style={'text-align': 'right'}), 
+                    html.Td([
+                        dcc.Input(id=id, value=value, type='text', placeholder=placeholder or label.lower(),
+                                  pattern=pattern,
+                                  style={'width': f'{width}px',
+                                         'height': '25px',
+                                         'text-align': 'center',
+                                         'margin': '0 10px'}),
+                        html.Button('now', id='now-btn', 
+                                     style={'text-decoration': 'underline',
+                                            'background': 'none',
+                                            'border': 'none',
+                                            'padding': '0!important',
+                                            'color': 'blueviolet',
+                                            'cursor': 'pointer'}),
+                    ])
+            ])
+
+
 # main header
 header = html.Div([
         html.H1(id='H1', children=[
             html.Div('TON Auction Demo'),
             dcc.Link(children='github', 
                     href='https://github.com/sergey-msu/nft-auction', 
-                    target='_blank', style={'font-size': '8pt'}),
+                    target='_blank', style={'font-size': '8pt', 
+                                            'float': 'right',
+                                            'margin': '20px',
+                                            'color': 'cornflowerblue'}),
             ], 
             style = {'textAlign':'center',
                         'color':'white',
                         'fontFamily': 'Helvetica',
                         'paddingTop':40, 
-                        'paddingBottom':5, 
+                        'paddingBottom':40, 
                         'margin-block-end': 0,
                         'margin-inline-start': 0,
                         'background': 'linear-gradient(0.25turn, #456bf8, #1b2a63)'}),
@@ -73,22 +119,22 @@ left_panel = html.Div(
                 exit_code_tr('810', 'cancel insufficient balance', 'trying to cancel auction with insufficient balance. Should be: `my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee`'),
                 exit_code_tr('811', 'cancel insufficient balance', 'the same as 810 but in case of existing bidder. Auction balance should be: `my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + 2*fwd_fee`'),
             ]),
-        style={'font-size': 'small'})
+            style={'font-size': 'small'}
+        )
     ], 
-    style = {'width': '20%', 'height': '500px', 'float': 'left', 'background': '#C5D0F8', 'padding': '20px'}
+    style = {'width': '20%', 'height': '200vh', 'float': 'left', 'background': '#b9deff', 'padding': '20px'}
 )
 
 # collection operations
 collection_div = html.Div([
-        html.Label(children='Collection', style={'padding': '0 0 20px 0'}),
+        html.Label(children='Collection', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
         html.Div(style={'margin': '10px'}),
-        html.Button('Deploy New', id='deploy-coll-btn',
+        html.Button('Deploy New', id='deploy-coll-btn', className='btn',
                     style={'width': '110px',
                             'height': '30px',
                             'borderRadius': '15px 15px',
-                            'borderWidth': '3',
+                            'border-width': '3',
                             'margin': '0 10px',
-                            'backgroundColor': '#0088cc',
                             'color': 'white'}),
         html.Div(style={'margin': '5px'}),
         dcc.Link(id='coll-addr-link', children='', href='link', target='_blank', style={'font-size': 'small'}),
@@ -96,21 +142,22 @@ collection_div = html.Div([
 
 # item operations
 item_div = html.Div([
-        html.Label(children='NFT', style={'padding': '0 0 20px 0'}),
+        html.Label(children='NFT', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
         html.Div(style={'margin': '10px'}),
-        dcc.Input(id="coll-addr-input", type='text', placeholder="collection address",
-                  style={'width': '400px',
-                         'height': '25px',
-                         'text-align': 'center',
-                         'margin': '0 10px'}),
+
+        html.Table(
+            html.Tbody([
+                get_auction_param_tr('Collection Address', 'coll-addr-input', pattern='^.{48}$'),
+            ]),
+            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto', 'padding-left': '40px'}
+        ),
         html.Div(style={'margin': '5px'}),
-        html.Button('Mint New', id='mint-item-btn',
+        html.Button('Mint New', id='mint-item-btn', className='btn',
                     style={'width': '110px',
                             'height': '30px',
                             'borderRadius': '15px 15px',
                             'borderWidth': '3',
                             'margin': '0 10px',
-                            'backgroundColor': '#0088cc',
                             'color': 'white'}),
         html.Div(style={'margin': '5px'}),
         dcc.Link(id='item-addr-link', children='', href='link', target='_blank', style={'font-size': 'small'}),
@@ -118,25 +165,110 @@ item_div = html.Div([
 
 # auction operations
 auction_div = html.Div([
-        html.Label(children='Auction', style={'padding': '0 0 20px 0'}),
+        html.Label(children='Auction', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
         html.Div(style={'margin': '10px'}),
-        dcc.Input(id="item-addr-input", type='text', placeholder="NFT address",
-                  style={'width': '400px',
-                         'height': '25px',
-                         'text-align': 'center',
-                         'margin': '0 10px'}),
+        
+        html.Table(
+            html.Tbody([
+                get_auction_param_tr('NFT Address', 'item-addr-input', placeholder='item address', pattern='^.{48}$'),
+                get_auction_param_tr('Marketplace Fee Address', 'market-fee-addr-input', value=WALLET2, pattern='^.{48}$'),
+                get_auction_param_tr('Royalty Address', 'royalty-addr-input', value=WALLET3, pattern='^.{48}$'),
+            ]),
+            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+        ),
         html.Div(style={'margin': '5px'}),
-        html.Button('Deploy New', id='deploy-auction-btn',
+
+        html.Table(
+            html.Tbody([
+                get_auction_param_tr('Market fee, %', 'market-fee-input', placeholder='fee, %', width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_param_tr('Royalty, %', 'royalty-input', placeholder='fee, %', width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_deadline_param_tr('Auction Deadline, sec', 'deadline-input', placeholder='unix time, sec', width=100, pattern='^(\d+)$'),
+                get_auction_param_tr('Sniper before, sec', 'sniper-before-input', placeholder='sec', value=300, width=40, pattern='^(\d+)$'),
+                get_auction_param_tr('Sniper prolong, sec', 'sniper-prolong-input', placeholder='sec', value=600, width=40, pattern='^(\d+)$'),
+                get_auction_param_tr('Min bid, TON', 'min-bid-input', placeholder='TON', value=1, width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_param_tr('Max bid, TON', 'max-bid-input', placeholder='TON', value='', width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_param_tr('Bid step, TON', 'bid-step-input', placeholder='TON', value=0.1, width=40, pattern='^(\d+(\.\d+)?)$'),
+            ]),
+            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+        ),
+        
+        html.Div(style={'margin': '5px'}),
+        html.Button('Deploy New', id='deploy-auction-btn', className='btn',
                     style={'width': '110px',
                             'height': '30px',
                             'borderRadius': '15px 15px',
                             'borderWidth': '3',
                             'margin': '0 10px',
-                            'backgroundColor': '#0088cc',
                             'color': 'white'}),
         html.Div(style={'margin': '5px'}),
         dcc.Link(id='auction-addr-link', children='', href='link', target='_blank', style={'font-size': 'small'}),
+        
     ], style={'padding': '0 0 25px 0'})
+
+
+# auction operations
+fun_div = html.Div([
+        html.Label(children='Have Fun', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
+        html.Div(style={'margin': '10px'}),
+
+        html.Table(
+            html.Tbody([
+                get_auction_param_tr('Auction Address', 'auction-addr-input', pattern='^.{48}$'),
+                get_auction_param_tr('From Address', 'from-addr-input', value=WALLET1, pattern='^.{48}$'),
+            ]),
+            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+        ),
+
+        html.Div(style={'margin': '20px'}),
+        html.Button('Info', id='info-auction-btn', className='grey-btn',
+            style={'width': '110px',
+                    'height': '30px',
+                    'borderRadius': '15px 15px',
+                    'borderWidth': '3',
+                    'margin': '0 10px',
+                    'color': 'white'}),
+        html.Button('Start', id='start-auction-btn', className='green-btn',
+            style={'width': '110px',
+                    'height': '30px',
+                    'borderRadius': '15px 15px',
+                    'borderWidth': '3',
+                    'margin': '0 10px',
+                    'color': 'white'}),
+        html.Button('Cancel', id='cancel-auction-btn', className='yellow-btn',
+            style={'width': '110px',
+                    'height': '30px',
+                    'borderRadius': '15px 15px',
+                    'borderWidth': '3',
+                    'margin': '0 10px',
+                    'color': 'white'}),
+        html.Button('Finish', id='finish-auction-btn', className='red-btn',
+            style={'width': '110px',
+                    'height': '30px',
+                    'borderRadius': '15px 15px',
+                    'borderWidth': '3',
+                    'margin': '0 10px',
+                    'color': 'white'}),
+
+        html.Div(style={'margin': '20px'}),
+        html.Label(id='message-label', style={'font-size': '12pt', 'color': 'blue'}),
+
+        html.Div(style={'margin': '20px'}),
+        html.Table(
+            html.Tbody([
+                get_result_link_tr('NFT:', 'r-item-addr-label', '', ''),
+                get_result_link_tr('Current NFT Owner:', 'r-item-owner-addr-label', '', ''),
+                get_result_link_tr('Auction NFT Owner:', 'r-auc-item-owner-addr-label', '', ''),
+                get_result_link_tr('Auction Curr Bid From:', 'r-auc-curr-winner-addr-label', '', ''),
+                get_result_tr('Auction Curr Bid:', 'r-auc-curr-winner-bid-label'),
+                get_result_tr('Auction is Started:', 'r-auc-is-started-label'),
+                get_result_tr('Auction is Finished:', 'r-auc-is-finished-label'),
+                get_result_tr('Auction is Cancelled:', 'r-auc-is-cancelled-label'),
+                get_result_tr('Auction Time:', 'r-auc-curr-time-label'),
+            ]),
+            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+        ),
+    ], style={'padding': '0 0 25px 0'})
+
 
 # working panel
 right_panel = \
@@ -144,6 +276,7 @@ right_panel = \
         collection_div,
         item_div,
         auction_div,
-    ], style={'text-align': 'center', 'padding': '20px'})
+        fun_div,
+    ], style={'text-align': 'center', 'padding': '20px 0'})
 
 layout = html.Div([header, html.Div([left_panel, right_panel])], style={'fontFamily': 'Helvetica',})

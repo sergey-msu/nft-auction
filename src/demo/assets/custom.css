@@ -1,0 +1,34 @@
+.btn {
+    background-color: #0088cc;
+}
+.btn:active {
+    background-color: #006ca3;
+}
+
+.grey-btn {
+    background-color: #c6c6c6;
+}
+.grey-btn:active {
+    background-color: #9e9e9e;
+}
+
+.green-btn {
+    background-color: #6aa84f;
+}
+.green-btn:active {
+    background-color: #54863f;
+}
+
+.yellow-btn {
+    background-color: #f1c232;
+}
+.yellow-btn:active {
+    background-color: #c09b28;
+}
+
+.red-btn {
+    background-color: #cc0000;
+}
+.red-btn:active {
+    background-color: #a30000;
+}
