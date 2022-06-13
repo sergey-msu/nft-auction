@@ -78,11 +78,17 @@ def get_auction_deadline_param_tr(label, id, placeholder=None, width=400, value=
 header = html.Div([
         html.H1(id='H1', children=[
             html.Div('TON Auction Demo'),
+            dcc.Link(children='docs', 
+                     href='https://github.com/sergey-msu/nft-auction/blob/main/docs/site.md', 
+                     target='_blank', style={'font-size': '8pt', 
+                                            'float': 'right',
+                                            'margin': '20px 10px',
+                                            'color': 'cornflowerblue'}),
             dcc.Link(children='github', 
                     href='https://github.com/sergey-msu/nft-auction', 
                     target='_blank', style={'font-size': '8pt', 
                                             'float': 'right',
-                                            'margin': '20px',
+                                            'margin': '20px 0',
                                             'color': 'cornflowerblue'}),
             ], 
             style = {'textAlign':'center',
