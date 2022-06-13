@@ -23,8 +23,15 @@ class HttpApiProvider:
 
 
     def run_get(self, smc_addr, smc_method, stack=None):
-        result = self._post('runGetMethod', smc_addr=smc_addr, smc_method=smc_method, stack=stack)
-        return result['stack']
+        result = self._post('runGetMethod', smc_addr=smc_addr, smc_method=smc_method, stack=stack)['stack']
+
+        assert result[0][0] == 'ok' 
+        ok = result[0][1]
+        if ok != True:
+            raise Exception(result[1][1])
+        result = result[1:]
+
+        return result
 
 
     def run_get_balance(self, address):
@@ -63,13 +70,14 @@ class HttpApiProvider:
                 code = result.get('exit_code', 0)
 
                 if code == -13:
-                    return {'stack': {'ok': False, 'message': 'Contract does not extist'}}
+                    return {'stack': [['ok', False], ['message', 'Contract does not extist']]}
 
                 success = (ok == 'ok') and (code in [0, 1])
                 if not success:
                     raise Exception(result)
 
-                result['ok'] = True
+                if 'stack' in result:
+                    result['stack'].append(['ok', True])
 
                 return result
 

@@ -49,9 +49,6 @@ class Wallet(ContractBase):
     def seqno(self, wait=False):
         if self._seqno is None:
             result = self.api.run_get(self.address, 'seqno')
-            if not result['ok']:
-                raise Exception(result['message'])
-
             self._seqno = int(result[0][1], 16)
             return self._seqno
 

@@ -141,8 +141,6 @@ class NftAuction(ContractBase):
 
     def get_general_data(self):
         result = self.api.run_get(self.address, 'get_general_data')
-        if not result['ok']:
-            raise Exception(result['message'])
 
         if result and len(result) == 3:
             nft_owner_address = addr_from_b64(result[2][1]['object']['data']['b64'])['b']
@@ -158,8 +156,6 @@ class NftAuction(ContractBase):
 
     def get_marketplace_fee_data(self):
         result = self.api.run_get(self.address, 'get_marketplace_fee_data')
-        if not result['ok']:
-            raise Exception(result['message'])
 
         if result and len(result) == 3:
             return {
@@ -173,8 +169,6 @@ class NftAuction(ContractBase):
 
     def get_royalty_data(self):
         result = self.api.run_get(self.address, 'get_royalty_data')
-        if not result['ok']:
-            raise Exception(result['message'])
 
         if result and len(result) == 3:
             return {
@@ -188,8 +182,6 @@ class NftAuction(ContractBase):
 
     def get_auction_data(self):
         result = self.api.run_get(self.address, 'get_auction_data')
-        if not result['ok']:
-            raise Exception(result['message'])
 
         if result and len(result) == 12:
             return {

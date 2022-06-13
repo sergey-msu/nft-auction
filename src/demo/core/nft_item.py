@@ -101,9 +101,7 @@ class NftItem(ContractBase):
     # Smart Contract GET methods
 
     def get_nft_data(self):
-        result = self.api.run_get(self.address, 'get_nft_data')
-        if not result['ok']:
-            raise Exception(result['message'])
+        result = self.api.run_get(self.address, 'get_nft_data')            
 
         if result and len(result) == 5:
             return {
