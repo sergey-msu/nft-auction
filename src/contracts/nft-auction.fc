@@ -353,7 +353,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
 
       if (~ finished?) {
         ;; auction not finished yet: finish him
-        finish_auction(my_balance, fwd_fee, 0,
+        finish_auction(my_balance - msg_value, fwd_fee, 0,
                        marketplace_address, nft_address, nft_owner_address,
                        marketplace_fee_params, royalty_params,
                        auction_finish_time, auction_salt, sniper_before_time, sniper_after_prolong,
@@ -361,7 +361,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
                        curr_winner_address, curr_winner_bid, 
                        finished?);
       }
-      
+
       return ();
     }
 
