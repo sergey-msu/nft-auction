@@ -11,8 +11,7 @@ def get_link_div(title, id, link):
         dcc.Link(id=id, 
                  children=[
                      html.Div(children=link,
-                              style={'font-size': 'small', 
-                                     'text-overflow': 'ellipsis', 
+                              style={'text-overflow': 'ellipsis', 
                                      'overflow': 'hidden', 
                                      'white-space': 'nowrap', 
                                      'white-space': 'nowrap'})], 
@@ -24,7 +23,7 @@ def get_link_div(title, id, link):
 def exit_code_tr(code, text, details):
     return html.Tr([
                     html.Td(code, style={'font-weight': 'bold'}), 
-                    html.Td(text, style={'font-size': '9pt'})
+                    html.Td(text, style={'font-size': '10pt', 'padding': '4px'})
             ], title=details)
 
 
@@ -36,7 +35,7 @@ def get_result_tr(label, id):
 
 def get_result_link_tr(label, id, value, href):
     return html.Tr([html.Td(label, style={'text-align': 'right'}), 
-                    dcc.Link(id=id, children=value, href=href, target='_blank', style={'font-size': 'small'}),
+                    dcc.Link(id=id, children=value, href=href, target='_blank', style={}),
             ])
 
 
@@ -107,7 +106,7 @@ left_panel = html.Div(
         html.Div([
             html.Label(children='TVM Exit Codes:'),
             html.Br()], 
-        style={'margin': '30px 0 0 0'}),
+        style={'margin': '30px 0 10px 0'}),
         
         html.Table(
             html.Tbody([
@@ -123,7 +122,7 @@ left_panel = html.Div(
                 exit_code_tr('810', 'cancel insufficient balance', 'trying to cancel auction with insufficient balance. Should be: `my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + fwd_fee`'),
                 exit_code_tr('811', 'cancel insufficient balance', 'the same as 810 but in case of existing bidder. Auction balance should be: `my_balance > min_gas_amount() + min_tons_for_storage() + transfer_invoke_fee() + 2*fwd_fee`'),
             ]),
-            style={'font-size': 'small'}
+            style={}
         )
     ], 
     style = {'width': '20%', 'height': '200vh', 'float': 'left', 'background': '#b9deff', 'padding': '20px'}
@@ -131,7 +130,7 @@ left_panel = html.Div(
 
 # collection operations
 collection_div = html.Div([
-        html.Label(children='Collection', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
+        html.Label(children='Collection', style={'padding': '0 0 20px 0', 'font-weight': 'bold', 'font-size': 'larger'}),
         html.Div(style={'margin': '10px'}),
         html.Button('Deploy New', id='deploy-coll-btn', className='btn',
                     style={'width': '110px',
@@ -141,19 +140,19 @@ collection_div = html.Div([
                             'margin': '0 10px',
                             'color': 'white'}),
         html.Div(style={'margin': '5px'}),
-        dcc.Link(id='coll-addr-link', children='', href='link', target='_blank', style={'font-size': 'small'}),
+        dcc.Link(id='coll-addr-link', children='', href='link', target='_blank', style={}),
     ], style={'padding': '0 0 25px 0'})
 
 # item operations
 item_div = html.Div([
-        html.Label(children='NFT', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
+        html.Label(children='NFT', style={'padding': '0 0 20px 0', 'font-weight': 'bold', 'font-size': 'larger'}),
         html.Div(style={'margin': '10px'}),
 
         html.Table(
             html.Tbody([
                 get_auction_param_tr('Collection Address', 'coll-addr-input', pattern='^.{48}$'),
             ]),
-            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto', 'padding-left': '40px'}
+            style={'margin-left': 'auto', 'margin-right': 'auto', 'padding-right': '120px'}
         ),
         html.Div(style={'margin': '5px'}),
         html.Button('Mint New', id='mint-item-btn', className='btn',
@@ -164,12 +163,12 @@ item_div = html.Div([
                             'margin': '0 10px',
                             'color': 'white'}),
         html.Div(style={'margin': '5px'}),
-        dcc.Link(id='item-addr-link', children='', href='link', target='_blank', style={'font-size': 'small'}),
+        dcc.Link(id='item-addr-link', children='', href='link', target='_blank', style={}),
     ], style={'padding': '0 0 25px 0'})
 
 # auction operations
 auction_div = html.Div([
-        html.Label(children='Auction', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
+        html.Label(children='Auction', style={'padding': '0 0 20px 0', 'font-weight': 'bold', 'font-size': 'larger'}),
         html.Div(style={'margin': '10px'}),
         
         html.Table(
@@ -178,7 +177,7 @@ auction_div = html.Div([
                 get_auction_param_tr('Marketplace Fee Address', 'market-fee-addr-input', value=WALLET2, pattern='^.{48}$'),
                 get_auction_param_tr('Royalty Address', 'royalty-addr-input', value=WALLET3, pattern='^.{48}$'),
             ]),
-            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+            style={'margin-left': 'auto', 'margin-right': 'auto', 'padding-right': '150px'}
         ),
         html.Div(style={'margin': '5px'}),
 
@@ -193,7 +192,7 @@ auction_div = html.Div([
                 get_auction_param_tr('Max bid, TON', 'max-bid-input', placeholder='TON', width=40, pattern='^(\d+(\.\d+)?)$'),
                 get_auction_param_tr('Bid step, TON', 'bid-step-input', placeholder='TON', value=0.1, width=40, pattern='^(\d+(\.\d+)?)$'),
             ]),
-            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+            style={'margin-left': 'auto', 'margin-right': 'auto', 'padding-right': '150px'}
         ),
         
         html.Div(style={'margin': '5px'}),
@@ -205,27 +204,32 @@ auction_div = html.Div([
                             'margin': '0 10px',
                             'color': 'white'}),
         html.Div(style={'margin': '5px'}),
-        dcc.Link(id='auction-addr-link', children='', href='link', target='_blank', style={'font-size': 'small'}),
+        dcc.Link(id='auction-addr-link', children='', href='link', target='_blank', style={}),
         
     ], style={'padding': '0 0 25px 0'})
 
 
 # auction actions
 fun_div = html.Div([
-        html.Label(children='Have Fun', style={'padding': '0 0 20px 0', 'font-weight': 'bold'}),
+        html.Label(children='Have Fun', style={'padding': '0 0 20px 0', 'font-weight': 'bold', 'font-size': 'larger'}),
         html.Div(style={'margin': '10px'}),
 
         html.Table(
             html.Tbody([
                 get_auction_param_tr('Auction Address', 'auction-addr-input', pattern='^.{48}$'),
                 get_auction_param_tr('Bidder Address', 'bidder-addr-input', pattern='^.{48}$'),
-                get_auction_param_tr('Bid', 'bidder-bid-input', pattern='^(\d+(\.\d+)?)$', width=40, align='left',
+            ]),
+            style={'margin-left': 'auto', 'margin-right': 'auto', 'padding-right': '100px'}
+        ),
+        html.Table(
+            html.Tbody([
+                get_auction_param_tr('Bid', 'bidder-bid-input', pattern='^(\d+(\.\d+)?)$', placeholder='TON', width=40, align='left',
                     after=html.Button(children='1', id='bid-auction-btn', className='ton-btn',
                                       title='Place a bid',
                                       style={'height': '35px', 'width': '35px', 'border-radius': '18px', 'color': 'transparent'})
                 ),
             ]),
-            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+            style={'margin-left': 'auto', 'margin-right': 'auto', 'padding-right': '0px'}
         ),
 
         html.Div(style={'margin': '20px'}),
@@ -274,7 +278,7 @@ fun_div = html.Div([
                 get_result_tr('Auction is Cancelled:', 'r-auc-is-cancelled-label'),
                 get_result_tr('Auction Time:', 'r-auc-curr-time-label'),
             ]),
-            style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}
+            style={'margin-left': 'auto', 'margin-right': 'auto', 'padding-right': '100px'}
         ),
     ], style={'padding': '0 0 25px 0'})
 
