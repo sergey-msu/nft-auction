@@ -103,7 +103,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
     .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
   .end_cell();
 
-  send_raw_message(msg, 66); ;; carry all inbound amount minus fees + ignore errors
+  send_raw_message(msg, 64); ;; carry all inbound amount minus fees + ignore errors
 
   return ();
 }
