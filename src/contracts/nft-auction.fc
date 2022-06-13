@@ -348,6 +348,9 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
     ;; check time is up
     int time_up? = null?(auction_finish_time) ? 0 : (now() > auction_finish_time);
     if (time_up?) {
+      ;; return bid back to sender
+      return_bid_to_sender(sender_address);
+
       if (~ finished?) {
         ;; auction not finished yet: finish him
         finish_auction(my_balance, fwd_fee, 0,
@@ -358,10 +361,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
                        curr_winner_address, curr_winner_bid, 
                        finished?);
       }
-
-      ;; return bid back to sender
-      return_bid_to_sender(sender_address);
-
+      
       return ();
     }
 
