@@ -258,10 +258,10 @@ fun_div = html.Div([
                             'margin': '0 10px',
                             'color': 'white'}),
 
-        html.Div(style={'margin': '20px'}),
+        html.Div(style={'margin': '30px'}),
         html.Label(id='message-label', style={'font-size': '12pt', 'color': 'blue'}),
 
-        html.Div(style={'margin': '20px'}),
+        html.Div(style={'margin': '30px'}),
         html.Table(
             html.Tbody([
                 get_result_link_tr('NFT:', 'r-item-addr-label', '', ''),
