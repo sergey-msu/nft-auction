@@ -95,7 +95,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
 } 
 
 
-() return_bid_to_sender(slice sender_address, int msg_value) impure inline {
+() return_bid_to_sender(slice sender_address) impure inline {
   var msg = begin_cell()
     .store_uint(0x10, 6) ;; nobounce
     .store_slice(sender_address)
@@ -103,10 +103,10 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
     .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
   .end_cell();
 
-  send_raw_message(msg, 64); ;; carry all inbound amount minus fees
+  send_raw_message(msg, 66); ;; carry all inbound amount minus fees + ignore errors
 
   return ();
-} 
+}
 
 
 () finish_auction(int my_balance, int fwd_fee, int query_id,
@@ -209,7 +209,7 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
   if (finished? |  ;; finished
       ((bid_value < curr_bid) & null?(curr_winner_addr)) | ;; first bid ever
       ((bid_value <= curr_bid + bid_step_value) & (~ null?(curr_winner_addr)))) {  ;; non-first bid 
-    return_bid_to_sender(sender_address, bid_value);
+    return_bid_to_sender(sender_address);
     return ();
   }
 
@@ -348,9 +348,6 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
     ;; check time is up
     int time_up? = null?(auction_finish_time) ? 0 : (now() > auction_finish_time);
     if (time_up?) {
-      ;; return bid back to sender
-      return_bid_to_sender(sender_address, msg_value);
-
       if (~ finished?) {
         ;; auction not finished yet: finish him
         finish_auction(my_balance, fwd_fee, 0,
@@ -361,6 +358,9 @@ int transfer_invoke_fee() asm "50000000 PUSHINT"; ;; 0.05 TON
                        curr_winner_address, curr_winner_bid, 
                        finished?);
       }
+
+      ;; return bid back to sender
+      return_bid_to_sender(sender_address);
 
       return ();
     }

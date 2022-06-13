@@ -184,13 +184,13 @@ auction_div = html.Div([
 
         html.Table(
             html.Tbody([
-                get_auction_param_tr('Market fee, %', 'market-fee-input', placeholder='fee, %', width=40, pattern='^(\d+(\.\d+)?)$'),
-                get_auction_param_tr('Royalty, %', 'royalty-input', placeholder='fee, %', width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_param_tr('Market fee, %', 'market-fee-input', placeholder='fee, %', value=5, width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_param_tr('Royalty, %', 'royalty-input', placeholder='fee, %', width=40, value=7, pattern='^(\d+(\.\d+)?)$'),
                 get_auction_deadline_param_tr('Auction Deadline, sec', 'deadline-input', placeholder='unix time, sec', width=100, pattern='^(\d+)$'),
                 get_auction_param_tr('Sniper before, sec', 'sniper-before-input', placeholder='sec', value=300, width=40, pattern='^(\d+)$'),
                 get_auction_param_tr('Sniper prolong, sec', 'sniper-prolong-input', placeholder='sec', value=600, width=40, pattern='^(\d+)$'),
                 get_auction_param_tr('Min bid, TON', 'min-bid-input', placeholder='TON', value=1, width=40, pattern='^(\d+(\.\d+)?)$'),
-                get_auction_param_tr('Max bid, TON', 'max-bid-input', placeholder='TON', value='', width=40, pattern='^(\d+(\.\d+)?)$'),
+                get_auction_param_tr('Max bid, TON', 'max-bid-input', placeholder='TON', width=40, pattern='^(\d+(\.\d+)?)$'),
                 get_auction_param_tr('Bid step, TON', 'bid-step-input', placeholder='TON', value=0.1, width=40, pattern='^(\d+(\.\d+)?)$'),
             ]),
             style={'font-size': 'small', 'margin-left': 'auto', 'margin-right': 'auto'}

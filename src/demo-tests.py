@@ -398,7 +398,7 @@ def get_auction_args(subparsers):
         required=True)
     subparser.add_argument(
         '-am', '--amount',
-        help='Amount init contract',
+        help='Bid amount',
         type=int,
         default=150_000_000)
     subparser.add_argument(

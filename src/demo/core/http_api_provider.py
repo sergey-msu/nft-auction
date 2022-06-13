@@ -59,10 +59,17 @@ class HttpApiProvider:
 
             if response.get('result', None):
                 result = response['result']
-                success = (result.get('@type', 'ok') == 'ok') and \
-                          (result.get('exit_code', 0) in [0, 1])
+                ok = result.get('@type', 'ok')
+                code = result.get('exit_code', 0)
+
+                if code == -13:
+                    return {'stack': {'ok': False, 'message': 'Contract does not extist'}}
+
+                success = (ok == 'ok') and (code in [0, 1])
                 if not success:
                     raise Exception(result)
+
+                result['ok'] = True
 
                 return result
 

@@ -260,50 +260,70 @@ def update_graph(n1, n2, n3, n4, auction_addr, bidder_addr=None, bidder_bid=None
 def auction_start(auction_addr):
     print('Starting auction...')
 
-    wallet = Wallet(BUILDER, API, address=WALLET1, pk_file=PRIVATE_KEY)
-    auction = NftAuction(BUILDER, API, address=auction_addr)
-    nft_address = auction.get_general_data()['nft_address']
+    try:
+        wallet = Wallet(BUILDER, API, address=WALLET1, pk_file=PRIVATE_KEY)
+        auction = NftAuction(BUILDER, API, address=auction_addr)
+        nft_address = auction.get_general_data()['nft_address']
 
-    item = NftItem(BUILDER, API, wallet=wallet, address=nft_address)
-    item.transfer_ownership(new_owner_address=auction_addr, 
-                            forward_amount=INIT_NG,
-                            item_ng=START_NG, send=True)
+        item = NftItem(BUILDER, API, wallet=wallet, address=nft_address)
+        item.transfer_ownership(new_owner_address=auction_addr, 
+                                forward_amount=INIT_NG,
+                                item_ng=START_NG, send=True)
 
-    return ['Auction start request sended. Wait ~20 sec and press Info']
+        msg = 'Auction START request sended. Wait ~20 sec and press Info'
+    except Exception as ex:
+        msg = ex.message
+
+    return [msg]
 
 
 def auction_cancel(auction_addr):
     print('Cancelling auction...')
 
-    wallet = Wallet(BUILDER, API, address=WALLET1, pk_file=PRIVATE_KEY)
-    auction = NftAuction(BUILDER, API, address=auction_addr, wallet=wallet)
-    auction.cancel(cancel_ng=CANCEL_NG, send=True)
+    try:
+        wallet = Wallet(BUILDER, API, address=WALLET1, pk_file=PRIVATE_KEY)
+        auction = NftAuction(BUILDER, API, address=auction_addr, wallet=wallet)
+        auction.cancel(cancel_ng=CANCEL_NG, send=True)
 
-    return ['Auction cancel request sended Wait ~20 sec and press Info']
+        msg = 'Auction CANCEL request sended. Wait ~20 sec and press Info'
+    except Exception as ex:
+        msg = ex.message
+
+    return [msg]
 
 
 
 def auction_finish( auction_addr):
     print('Finishing auction...')
 
-    wallet = Wallet(BUILDER, API, address=WALLET1, pk_file=PRIVATE_KEY)
-    auction = NftAuction(BUILDER, API, address=auction_addr, wallet=wallet)
-    auction.finish(finish_ng=FINISH_NG, send=True)
+    try:
+        wallet = Wallet(BUILDER, API, address=WALLET1, pk_file=PRIVATE_KEY)
+        auction = NftAuction(BUILDER, API, address=auction_addr, wallet=wallet)
+        auction.finish(finish_ng=FINISH_NG, send=True)
 
-    return ['Auction finish request sended. Wait ~20 sec and press Info']
+        msg = 'Auction FINISH request sended. Wait ~20 sec and press Info'
+    except Exception as ex:
+        msg = ex.message
+
+    return [msg]
 
 
 def auction_bid(auction_addr, bidder_addr, amount):
     print('Place a bid...')
 
-    amount = int(10**9 * float(amount))
-    if amount > 10_000_000_000:
-        raise ValueError('Bid is too much for testing')
+    try:
+        amount = int(10**9 * float(amount))
+        if amount > 10_000_000_000:
+            raise ValueError('Bid is too much for testing')
 
-    bidder = Wallet(BUILDER, API, address=bidder_addr, pk_file=PRIVATE_KEY)
-    bidder.transfer_money(to=auction_addr, amount=amount, send=True)
+        bidder = Wallet(BUILDER, API, address=bidder_addr, pk_file=PRIVATE_KEY)
+        bidder.transfer_money(to=auction_addr, amount=amount, send=True)
 
-    return ['Bid placed. Wait ~20 sec and press Info']
+        msg = 'Bid placed. Wait ~20 sec and press Info'
+    except Exception as ex:
+        msg = ex.message
+
+    return [msg]
 
 
 if __name__ == '__main__':

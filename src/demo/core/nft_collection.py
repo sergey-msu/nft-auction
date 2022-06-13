@@ -79,6 +79,8 @@ class NftCollection(ContractBase):
 
     def get_collection_data(self):
         result = self.api.run_get(self.address, 'get_collection_data')
+        if not result['ok']:
+            raise Exception(result['message'])
 
         if result and len(result) == 3:
             return {
@@ -92,6 +94,8 @@ class NftCollection(ContractBase):
 
     def royalty_params(self):
         result = self.api.run_get(self.address, 'royalty_params')
+        if not result['ok']:
+            raise Exception(result['message'])
 
         if result and len(result) == 3:
             return {
@@ -104,9 +108,9 @@ class NftCollection(ContractBase):
 
 
     def get_nft_address_by_index(self, index):
-        result = self.api.run_get(self.address, 
-                                  'get_nft_address_by_index',
-                                  stack=[['num', index]])
+        result = self.api.run_get(self.address, 'get_nft_address_by_index', stack=[['num', index]])
+        if not result['ok']:
+            raise Exception(result['message'])
 
         if result and len(result) == 1:
             return {
