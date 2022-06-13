@@ -26,10 +26,9 @@ class HttpApiProvider:
         result = self._post('runGetMethod', smc_addr=smc_addr, smc_method=smc_method, stack=stack)['stack']
 
         assert result[0][0] == 'ok' 
-        ok = result[0][1]
-        if ok != True:
+        if not result[0][1]:
             raise Exception(result[1][1])
-        result = result[1:]
+        result = result[2:]
 
         return result
 
@@ -77,7 +76,7 @@ class HttpApiProvider:
                     raise Exception(result)
 
                 if 'stack' in result:
-                    result['stack'].append(['ok', True])
+                    result['stack'] = [['ok', True], ['message', '']] + result['stack']
 
                 return result
 
